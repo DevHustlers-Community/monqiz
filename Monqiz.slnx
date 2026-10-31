@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="Shared/Shared.csproj" Id="b415c105-a9aa-4696-bebe-a6e5c59408a8" />
+    <Project Path="src/Monqiz.Api/Monqiz.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/Core/">
+    <Project Path="Core/Domain/Domain.csproj" Id="114281a3-64d1-4caa-a73b-20d39ad1caaf" />
+    <Project Path="Core/Services/Services.csproj" Id="c7775801-eddc-4e78-a39c-8148cd7ff1de" />
+    <Project Path="Core/ServicesAbstraction/ServicesAbstraction.csproj" Id="0a182465-48c7-4cb1-91d5-ddb4fbb0362c" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="Infrastructure/Persistence/Persistence.csproj" Id="43d3a742-32d9-41b2-88dc-56e3a3229f63" />
+    <Project Path="Infrastructure/Presentation/Presentation.csproj" Id="e52d559c-b3a9-49c1-8cf1-7588ebed75eb" />
+  </Folder>
+</Solution>

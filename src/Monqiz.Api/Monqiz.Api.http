@@ -1,0 +1,6 @@
+@Monqiz.Api_HostAddress = http://localhost:5139
+
+GET {{Monqiz.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
