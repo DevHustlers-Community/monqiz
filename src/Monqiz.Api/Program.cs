@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using Persistence.Data;
 using Scalar.AspNetCore;
 
 namespace Monqiz.Api;
@@ -12,6 +14,10 @@ public class Program
 
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
+        builder.Services.AddDbContext<MonqizDbContext>(option =>
+        {
+            option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+        });
 
         #endregion Add services to the container
 
