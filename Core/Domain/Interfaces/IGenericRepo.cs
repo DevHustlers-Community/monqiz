@@ -1,0 +1,26 @@
+﻿using Domain.Interfaces.Specification;
+using Shared;
+
+namespace Domain.Interfaces
+{
+    public interface IGenericRepo<TEntity> where TEntity : AsTable
+    {
+        Task<TEntity?> GetByIdAsync(Guid Id);
+
+        Task<IEnumerable<TEntity>> GetAllAsync(bool withTracking = false);
+
+        Task AddAsync(TEntity entity);
+
+        void Update(TEntity entity);
+
+        void Delete(TEntity entity);
+
+        #region Specification
+
+        Task<TEntity?> GetByIdAsync(ISpecification<TEntity> specification);
+
+        Task<IEnumerable<TEntity>> GetAllAsync(ISpecification<TEntity> specification, bool withTracking = false);
+
+        #endregion Specification
+    }
+}

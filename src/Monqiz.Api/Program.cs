@@ -1,6 +1,10 @@
+using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Data;
+using Persistence.Repositories;
 using Scalar.AspNetCore;
+using Services.Implementation;
+using ServicesAbstraction.Interfaces;
 
 namespace Monqiz.Api;
 
@@ -18,6 +22,11 @@ public class Program
         {
             option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddScoped<IManagerService, ManagerService>();
+        builder.Services.AddScoped<IAddressRepo, AddressRepo>();
+        builder.Services.AddScoped<IHospitalService, HospitalService>();
+        builder.Services.AddScoped<IAddressService, AddressService>();
 
         #endregion Add services to the container
 

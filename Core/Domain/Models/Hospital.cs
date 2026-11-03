@@ -1,6 +1,8 @@
-﻿namespace Domain.Models
+﻿using Shared;
+
+namespace Domain.Models
 {
-    public class Hospital
+    public class Hospital : AsTable
     {
         public Guid Id { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
