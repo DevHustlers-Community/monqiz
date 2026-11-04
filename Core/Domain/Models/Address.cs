@@ -5,7 +5,6 @@
         public Guid Id { get; set; }
         public string City { get; set; } = string.Empty;
         public string Governorate { get; set; } = string.Empty;
-        public string? Area { get; set; }
 
         #region Relations
 
