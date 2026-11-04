@@ -1,10 +1,14 @@
+using System.Text;
+using Domain.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Persistence.Data;
 using Scalar.AspNetCore;
-using Domain.Models;
-using Microsoft.AspNetCore.Identity;
 using Services.Implementation;
 using ServicesAbstraction.Interfaces;
+
 namespace Monqiz.Api;
 
 public class Program
@@ -17,14 +21,50 @@ public class Program
 
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
-        builder.Services.AddDbContext<MonqizDbContext>(option =>
+
+        builder.Services.AddDbContext<MonqizDbContext>(options =>
         {
-            option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            options.UseSqlServer(
+                builder.Configuration.GetConnectionString("DefaultConnection"));
         });
+
+        // Password Security
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         builder.Services.AddScoped<IPasswordService, PasswordService>();
 
-        #endregion Add services to the container
+        // JWT Token Service
+        builder.Services.AddScoped<ITokenService, TokenService>();
+
+        // JWT Authentication
+        var jwtSettings = builder.Configuration.GetSection("Jwt");
+        var secretKey = jwtSettings["Key"]
+            ?? throw new InvalidOperationException("JWT Key is missing.");
+
+        builder.Services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+
+                    ValidateAudience = true,
+                    ValidAudience = jwtSettings["Audience"],
+
+                    ValidateLifetime = true,
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(secretKey)),
+
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+        builder.Services.AddAuthorization();
+
+        #endregion
 
         var app = builder.Build();
 
@@ -38,11 +78,14 @@ public class Program
 
         app.UseStaticFiles();
         app.UseHttpsRedirection();
+
+        app.UseAuthentication();
         app.UseAuthorization();
+
         app.MapControllers();
 
-        #endregion Middlewares
-
+        #endregion
+        
         app.Run();
     }
 }
