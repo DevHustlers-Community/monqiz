@@ -12,6 +12,10 @@ namespace Presentation.Controllers
         public async Task<ActionResult<HospitalDto>> GetById(Guid id)
             => Ok(await _managerService.HospitalService.GetById(id));
 
+        [HttpGet]
+        public async Task<ActionResult<HospitalDto>> GetAll(string? governorate, string? city)
+            => Ok(await _managerService.HospitalService.GetAllAsync(governorate, city));
+
         [HttpPost]
         public async Task<ActionResult<int>> Create(HospitalCreateDto hospital)
             => Ok(await _managerService.HospitalService.CreateAsync(hospital));

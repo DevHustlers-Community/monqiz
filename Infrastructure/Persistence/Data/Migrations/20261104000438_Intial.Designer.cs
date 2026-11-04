@@ -12,8 +12,8 @@ using Persistence.Data;
 namespace Persistence.Data.Migrations
 {
     [DbContext(typeof(MonqizDbContext))]
-    [Migration("20261101001713_IntialMigration")]
-    partial class IntialMigration
+    [Migration("20261104000438_Intial")]
+    partial class Intial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
