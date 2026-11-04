@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Persistence.Data;
 using Scalar.AspNetCore;
-
+using Domain.Models;
+using Microsoft.AspNetCore.Identity;
+using Services.Implementation;
+using ServicesAbstraction.Interfaces;
 namespace Monqiz.Api;
 
 public class Program
@@ -18,6 +21,8 @@ public class Program
         {
             option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
+        builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+        builder.Services.AddScoped<IPasswordService, PasswordService>();
 
         #endregion Add services to the container
 
