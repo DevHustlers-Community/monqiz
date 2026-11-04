@@ -6,7 +6,8 @@ namespace Domain.Models
     public class User : IdentityUser<Guid>
     {
         public string FirstName { get; set; } = string.Empty;
-        public string? LastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
+        public string FullName => $"{FirstName} {LastName}";
         public string? PictureUrl { get; set; }
         public DateOnly BirthDate { get; set; }
         public DateOnly? LastDonationDate { get; set; }
