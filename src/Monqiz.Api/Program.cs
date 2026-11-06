@@ -61,6 +61,8 @@ public class Program
                     ClockSkew = TimeSpan.Zero
                 };
             });
+        builder.Services.AddMemoryCache();
+        builder.Services.AddScoped<IOtpService, OtpService>();
 
         builder.Services.AddAuthorization();
 
@@ -85,6 +87,7 @@ public class Program
         app.MapControllers();
 
         #endregion
+
         
         app.Run();
     }
