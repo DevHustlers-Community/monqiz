@@ -1,7 +1,4 @@
-﻿using Domain.Interfaces.Specification;
-using Shared;
-
-namespace Persistence
+﻿namespace Persistence
 {
     public static class SpecificationCreateQueries
     {
@@ -17,16 +14,10 @@ namespace Persistence
                     input = input.Include(include);
             }
 
-            if (specification.SelectExpression is not null)
-                input = (IQueryable<TEntiy>)input.Select(specification.SelectExpression);
-
             if (specification.OrderedByExpression is not null)
                 input = input.OrderBy(specification.OrderedByExpression);
             else if (specification.OrderedByDescExpression is not null)
                 input = input.OrderByDescending(specification.OrderedByDescExpression);
-
-            if (specification.IsDictinct)
-                input = input.Distinct();
 
             if (specification.IsPagenation)
                 input = input.Skip(specification.Skip).Take(specification.Take);

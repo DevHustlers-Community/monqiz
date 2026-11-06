@@ -1,10 +1,11 @@
-﻿using Shared.Dtos.Hospital;
+﻿using Shared.Dtos;
+using Shared.Dtos.Hospital;
 
 namespace ServicesAbstraction.Interfaces
 {
     public interface IHospitalService
     {
-        Task<IEnumerable<HospitalDto>> GetAllAsync(string? governorate, string? city);
+        Task<PagenatedResult<HospitalDto>> GetAllAsync(string? governorate, string? city, int? pageIndex);
 
         Task<HospitalDto> GetById(Guid id);
 

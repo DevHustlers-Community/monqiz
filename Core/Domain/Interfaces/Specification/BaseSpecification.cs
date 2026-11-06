@@ -38,34 +38,17 @@ namespace Domain.Interfaces.Specification
 
         #region Pagenation
 
-        public int Take { get; private set; }
+        public int Take { get; private set; } = 10;
         public int Skip { get; private set; }
         public bool IsPagenation { get; private set; }
 
-        public void ApplyPagenation(int pageNumber, int pageSize)
+        public void ApplyPagenation(int pageNumber)
         {
+            if (pageNumber <= 0) pageNumber = 1;
             IsPagenation = true;
-            Take = pageSize;
-            Skip = (pageNumber - 1) * pageSize;
+            Skip = (pageNumber - 1) * 10;
         }
 
         #endregion Pagenation
-
-        #region Dictinct
-
-        public bool IsDictinct { get; private set; } = false;
-
-        public void ApplyDictinct() => IsDictinct = true;
-
-        #endregion Dictinct
-
-        #region Select
-
-        public Expression<Func<TEntity, object>> SelectExpression { get; private set; }
-
-        public void ApplySelect(Expression<Func<TEntity, object>> selectExpression)
-            => SelectExpression = selectExpression;
-
-        #endregion Select
     }
 }

@@ -1,8 +1,4 @@
-﻿using Domain.Interfaces;
-using Persistence.Data;
-using Shared;
-
-namespace Persistence.Repositories
+﻿namespace Persistence.Repositories
 {
     public class UnitOfWork(MonqizDbContext _dbContext) : IUnitOfWork
     {

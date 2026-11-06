@@ -21,6 +21,8 @@ namespace Domain.Interfaces
 
         Task<IEnumerable<TEntity>> GetAllAsync(ISpecification<TEntity> specification, bool withTracking = false);
 
+        Task<int> GetCountAsync(ISpecification<TEntity> specification);
+
         #endregion Specification
     }
 }

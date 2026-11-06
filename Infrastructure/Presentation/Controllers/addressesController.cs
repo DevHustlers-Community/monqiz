@@ -6,7 +6,7 @@ namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AddressController(IManagerService _managerService) : ControllerBase
+    public class addressesController(IManagerService _managerService) : ControllerBase
     {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AddressDto>>> GetAllAddresses(string? governorate, string? city)

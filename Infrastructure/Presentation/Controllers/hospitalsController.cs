@@ -6,18 +6,18 @@ namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class HospitalController(IManagerService _managerService) : ControllerBase
+    public class hospitalsController(IManagerService _managerService) : ControllerBase
     {
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<HospitalDto>> GetById(Guid id)
             => Ok(await _managerService.HospitalService.GetById(id));
 
         [HttpGet]
-        public async Task<ActionResult<HospitalDto>> GetAll(string? governorate, string? city)
-            => Ok(await _managerService.HospitalService.GetAllAsync(governorate, city));
+        public async Task<ActionResult<IEnumerable<HospitalDto>>> GetAll(string? governorate, string? city, int? pageIndex)
+            => Ok(await _managerService.HospitalService.GetAllAsync(governorate, city, pageIndex));
 
         [HttpPost]
-        public async Task<ActionResult<int>> Create(HospitalCreateDto hospital)
+        public async Task<ActionResult<HospitalDto>> Create(HospitalCreateDto hospital)
             => Ok(await _managerService.HospitalService.CreateAsync(hospital));
 
         [HttpPut("{id:guid}")]

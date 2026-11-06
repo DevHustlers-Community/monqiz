@@ -1,9 +1,4 @@
-﻿using Domain.Interfaces;
-using Domain.Models;
-using Services.Specification;
-using ServicesAbstraction.Interfaces;
-using Shared.Dtos;
-using Shared.Dtos.Hospital;
+﻿using Shared.Dtos.Hospital;
 
 namespace Services.Implementation
 {
@@ -27,7 +22,6 @@ namespace Services.Implementation
                 {
                     City = hospital.Address.City,
                     Governorate = hospital.Address.Governorate,
-                    Area = hospital.Address.Area
                 } : address)
             };
             await _unitOfWork.GetGenericRepo<Hospital>().AddAsync(hospitalModel);
@@ -43,7 +37,6 @@ namespace Services.Implementation
                 {
                     City = hospitalModel.Address.City,
                     Governorate = hospitalModel.Address.Governorate,
-                    Area = hospitalModel.Address.Area
                 }
             };
         }
@@ -51,14 +44,18 @@ namespace Services.Implementation
         public async Task<int> DelteAsync(Guid id)
         {
             var hospital = await _unitOfWork.GetGenericRepo<Hospital>().GetByIdAsync(id);
-            if (hospital is null) throw new Exception("Not Found");
-            _unitOfWork.GetGenericRepo<Hospital>().Delete(hospital);
+            if (hospital is null) throw new NotFoundException($"Not Found Hospital with id : {id}");
+            hospital.IsDeleted = true;
             return await _unitOfWork.SaveChanagesAsync();
         }
 
-        public async Task<IEnumerable<HospitalDto>> GetAllAsync(string? governorate, string? city)
+        public async Task<PagenatedResult<HospitalDto>> GetAllAsync(string? governorate, string? city, int? pageIndex)
         {
-            var specification = new HospitalSpecification(governorate, city);
+            var specificationCount = new HospitalSpecification(governorate, city);
+            var totalCount = await _unitOfWork.GetGenericRepo<Hospital>().GetCountAsync(specificationCount);
+
+            if (!pageIndex.HasValue || pageIndex.Value <= 0) pageIndex = 1;
+            var specification = new HospitalSpecification(governorate, city, pageIndex.Value);
             var result = await _unitOfWork.GetGenericRepo<Hospital>().GetAllAsync(specification);
             List<HospitalDto> hospitals = new();
             foreach (var hospital in result)
@@ -72,20 +69,23 @@ namespace Services.Implementation
                     Id = hospital.Id,
                     Address = new AddressDto
                     {
-                        Area = hospital.Address.Area,
                         City = hospital.Address.City,
                         Governorate = hospital.Address.Governorate
                     }
                 });
             }
-            return hospitals;
+            return new PagenatedResult<HospitalDto>(pageIndex.HasValue ? pageIndex.Value : 0,
+                hospitals.Count, totalCount)
+            {
+                Dates = hospitals,
+            };
         }
 
         public async Task<HospitalDto> GetById(Guid id)
         {
             var specification = new HospitalSpecification(id);
             var hospital = await _unitOfWork.GetGenericRepo<Hospital>().GetByIdAsync(specification);
-            if (hospital is null) throw new Exception("Not Found");
+            if (hospital is null) throw new NotFoundException($"Not Found Hospital with id : {id}");
             return new HospitalDto
             {
                 Email = hospital.Email,
@@ -95,7 +95,6 @@ namespace Services.Implementation
                 Id = hospital.Id,
                 Address = new AddressDto
                 {
-                    Area = hospital.Address.Area,
                     City = hospital.Address.City,
                     Governorate = hospital.Address.Governorate,
                 }
@@ -105,7 +104,7 @@ namespace Services.Implementation
         public async Task<int> UpdateAsync(Guid id, HospitalUpdateDto hospital)
         {
             var originalHospital = await _unitOfWork.GetGenericRepo<Hospital>().GetByIdAsync(id);
-            if (originalHospital is null) throw new Exception("Not Found");
+            if (originalHospital is null) throw new NotFoundException($"Not Found Hospital with id : {id}");
             originalHospital.Email = hospital.Email;
             originalHospital.LocationUrl = hospital.LocationUrl;
             originalHospital.PhoneNumber = hospital.PhoneNumber;

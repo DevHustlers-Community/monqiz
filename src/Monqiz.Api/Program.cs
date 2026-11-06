@@ -1,5 +1,8 @@
 using Domain.Interfaces;
+using Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Persistence;
 using Persistence.Data;
 using Persistence.Repositories;
 using Scalar.AspNetCore;
@@ -10,7 +13,7 @@ namespace Monqiz.Api;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -27,10 +30,23 @@ public class Program
         builder.Services.AddScoped<IAddressRepo, AddressRepo>();
         builder.Services.AddScoped<IHospitalService, HospitalService>();
         builder.Services.AddScoped<IAddressService, AddressService>();
+        builder.Services.AddScoped<IDataSeeding, DataSeeding>();
+        builder.Services.AddIdentity<User, IdentityRole<Guid>>(option =>
+        {
+            option.Password.RequireNonAlphanumeric = true;
+            option.Password.RequireLowercase = true;
+            option.Password.RequireUppercase = true;
+            option.Password.RequireDigit = true;
+            option.User.RequireUniqueEmail = true;
+        }).AddEntityFrameworkStores<MonqizDbContext>()
+            .AddDefaultTokenProviders();
 
         #endregion Add services to the container
 
         var app = builder.Build();
+        using var scope = app.Services.CreateScope();
+        var objectOfDataSeeding = scope.ServiceProvider.GetRequiredService<IDataSeeding>();
+        await objectOfDataSeeding.DataSeed();
 
         #region Middlewares
 
@@ -39,9 +55,9 @@ public class Program
             app.MapOpenApi();
             app.MapScalarApiReference();
         }
-
         app.UseStaticFiles();
         app.UseHttpsRedirection();
+        app.UseMiddleware<GlobalExceptionMiddleware>();
         app.UseAuthorization();
         app.MapControllers();
 

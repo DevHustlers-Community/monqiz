@@ -2,15 +2,12 @@
 
 namespace Shared.Dtos
 {
-    public class AddressDto
+    public record AddressDto
     {
         [Required, MaxLength(50)]
-        public string City { get; set; } = string.Empty;
+        public string City { get; init; } = string.Empty;
 
         [Required, MaxLength(50)]
-        public string Governorate { get; set; } = string.Empty;
-
-        [MaxLength(50)]
-        public string? Area { get; set; }
+        public string Governorate { get; init; } = string.Empty;
     }
 }
