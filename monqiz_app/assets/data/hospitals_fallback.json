@@ -1,0 +1,50 @@
+[
+  {
+    "id": "c1f7a28e-59b4-4e33-92a1-000000000001",
+    "name": "مستشفى سرطان الأطفال 57357",
+    "phoneNumber": "19057",
+    "locationUrl": "https://maps.google.com/?q=30.0215,31.2366",
+    "email": "bloodbank@57357.org",
+    "address": {
+      "id": "a1f7a28e-59b4-4e33-92a1-000000000001",
+      "governorate": "القاهرة",
+      "city": "السيدة زينب"
+    }
+  },
+  {
+    "id": "c1f7a28e-59b4-4e33-92a1-000000000002",
+    "name": "مستشفيات جامعة القاهرة (قصر العيني)",
+    "phoneNumber": "0223654000",
+    "locationUrl": "https://maps.google.com/?q=30.0305,31.2289",
+    "email": "bloodbank@kasralainy.edu.eg",
+    "address": {
+      "id": "a1f7a28e-59b4-4e33-92a1-000000000002",
+      "governorate": "القاهرة",
+      "city": "المنيل"
+    }
+  },
+  {
+    "id": "c1f7a28e-59b4-4e33-92a1-000000000003",
+    "name": "مستشفى عين شمس التخصصي",
+    "phoneNumber": "0224024222",
+    "locationUrl": "https://maps.google.com/?q=30.0768,31.2854",
+    "email": "info@asuh.edu.eg",
+    "address": {
+      "id": "a1f7a28e-59b4-4e33-92a1-000000000003",
+      "governorate": "القاهرة",
+      "city": "مدينة نصر"
+    }
+  },
+  {
+    "id": "c1f7a28e-59b4-4e33-92a1-000000000004",
+    "name": "مستشفى الجلاء العسكري",
+    "phoneNumber": "0222687111",
+    "locationUrl": "https://maps.google.com/?q=30.0984,31.3325",
+    "email": "galaa@mod.gov.eg",
+    "address": {
+      "id": "a1f7a28e-59b4-4e33-92a1-000000000004",
+      "governorate": "القاهرة",
+      "city": "مصر الجديدة"
+    }
+  }
+]
