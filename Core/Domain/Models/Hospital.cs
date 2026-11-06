@@ -1,12 +1,15 @@
-﻿namespace Domain.Models
+﻿using Shared;
+
+namespace Domain.Models
 {
-    public class Hospital
+    public class Hospital : AsTable
     {
         public Guid Id { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
         public string LocationUrl { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+        public bool IsDeleted { get; set; } = false;
 
         #region Relations
 

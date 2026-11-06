@@ -1,0 +1,56 @@
+[
+  {
+    "Id": "b2000000-0000-0000-0000-000000000001",
+    "Name": "Nasr City Central Hospital",
+    "PhoneNumber": "01000000001",
+    "Email": "nasrcity.hospital@example.com",
+    "LocationUrl": "https://maps.google.com/?q=Nasr+City+Hospital",
+    "IsDeleted": false,
+    "AddressId": "a1000000-0000-0000-0000-000000000001"
+  },
+  {
+    "Id": "b2000000-0000-0000-0000-000000000002",
+    "Name": "Maadi General Hospital",
+    "PhoneNumber": "01000000002",
+    "Email": "maadi.hospital@example.com",
+    "LocationUrl": "https://maps.google.com/?q=Maadi+General+Hospital",
+    "IsDeleted": false,
+    "AddressId": "a1000000-0000-0000-0000-000000000002"
+  },
+  {
+    "Id": "b2000000-0000-0000-0000-000000000003",
+    "Name": "Dokki Medical Center",
+    "PhoneNumber": "01000000003",
+    "Email": "dokki.medical@example.com",
+    "LocationUrl": "https://maps.google.com/?q=Dokki+Medical+Center",
+    "IsDeleted": false,
+    "AddressId": "a1000000-0000-0000-0000-000000000003"
+  },
+  {
+    "Id": "b2000000-0000-0000-0000-000000000004",
+    "Name": "Smouha Specialized Hospital",
+    "PhoneNumber": "01000000004",
+    "Email": "smouha.hospital@example.com",
+    "LocationUrl": "https://maps.google.com/?q=Smouha+Specialized+Hospital",
+    "IsDeleted": false,
+    "AddressId": "a1000000-0000-0000-0000-000000000005"
+  },
+  {
+    "Id": "b2000000-0000-0000-0000-000000000005",
+    "Name": "Sohag General Hospital",
+    "PhoneNumber": "01000000005",
+    "Email": "sohag.hospital@example.com",
+    "LocationUrl": "https://maps.google.com/?q=Sohag+General+Hospital",
+    "IsDeleted": false,
+    "AddressId": "a1000000-0000-0000-0000-000000000007"
+  },
+  {
+    "Id": "b2000000-0000-0000-0000-000000000006",
+    "Name": "Tahta Central Hospital",
+    "PhoneNumber": "01000000006",
+    "Email": "tahta.hospital@example.com",
+    "LocationUrl": "https://maps.google.com/?q=Tahta+Central+Hospital",
+    "IsDeleted": false,
+    "AddressId": "a1000000-0000-0000-0000-000000000008"
+  }
+]

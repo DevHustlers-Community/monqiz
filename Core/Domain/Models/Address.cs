@@ -1,6 +1,8 @@
-﻿namespace Domain.Models
+﻿using Shared;
+
+namespace Domain.Models
 {
-    public class Address
+    public class Address : AsTable
     {
         public Guid Id { get; set; }
         public string City { get; set; } = string.Empty;
