@@ -8,7 +8,8 @@ using Persistence.Data;
 using Scalar.AspNetCore;
 using Services.Implementation;
 using ServicesAbstraction.Interfaces;
-
+using FluentValidation;
+using Shared.Dtos.Auth;
 namespace Monqiz.Api;
 
 public class Program
@@ -88,7 +89,6 @@ public class Program
 
         #endregion
 
-        
         app.Run();
     }
 }
