@@ -9,16 +9,16 @@ public class RegisterDtoValidator : AbstractValidator<RegisterDto>
     {
         RuleFor(x => x.FirstName)
             .NotEmpty()
-            .MaximumLength(50);
+            .MaximumLength(15);
 
         RuleFor(x => x.LastName)
             .NotEmpty()
-            .MaximumLength(50);
+            .MaximumLength(15);
 
         RuleFor(x => x.Email)
             .NotEmpty()
             .EmailAddress()
-            .MaximumLength(256);
+            .MaximumLength(100);
 
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()

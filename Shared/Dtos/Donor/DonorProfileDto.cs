@@ -16,4 +16,12 @@ public class DonorProfileDto
     public Gender Gender { get; set; }
     public BloodType BloodType { get; set; }
     public UserStatus Status { get; set; }
+    public List<DonorAddressDto> Addresses { get; set; } = [];
+}
+
+public class DonorAddressDto
+{
+    public Guid Id { get; set; }
+    public string City { get; set; } = string.Empty;
+    public string Governorate { get; set; } = string.Empty;
 }

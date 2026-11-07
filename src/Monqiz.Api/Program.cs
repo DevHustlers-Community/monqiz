@@ -10,6 +10,7 @@ using Services.Implementation;
 using ServicesAbstraction.Interfaces;
 using FluentValidation;
 using Shared.Dtos.Auth;
+using Shared.Validators.Auth;
 namespace Monqiz.Api;
 
 public class Program
@@ -66,7 +67,7 @@ public class Program
         builder.Services.AddScoped<IOtpService, OtpService>();
 
         builder.Services.AddAuthorization();
-
+        builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
         #endregion
 
         var app = builder.Build();
