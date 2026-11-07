@@ -6,9 +6,11 @@
         {
             builder.Property(e => e.City).HasMaxLength(50).IsRequired();
             builder.Property(e => e.Governorate).HasMaxLength(50).IsRequired();
+           
+            builder.HasMany(a => a.Hospitals).WithOne(h => h.Address)
+                .HasForeignKey(a => a.AddressId).OnDelete(DeleteBehavior.Restrict);
+            
             builder.HasIndex(e => new { e.Governorate, e.City }).IsUnique();
-            builder.HasMany(a => a.Hospitals).WithOne(h => h.Address).HasForeignKey(a => a.AddressId)
-                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
