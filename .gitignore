@@ -480,3 +480,56 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# ==============================================================================
+# Flutter / Dart / Mobile Build & Cache
+# ==============================================================================
+**/build/
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+*.apk
+*.aab
+*.ap_
+*.dex
+.gradle/
+**/.gradle/
+**/local.properties
+**/GeneratedPluginRegistrant.*
+*.keystore
+*.jks
+key.properties
+
+# ==============================================================================
+# Node & Web Caches
+# ==============================================================================
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==============================================================================
+# Lottie Files & Animation Assets
+# ==============================================================================
+*.lottie
+temp_lottie/
+**/temp_lottie/
+*lottie*.json
+**/*_lottie.json
+**/lottie_test/
+**/animations_temp/
+
+# ==============================================================================
+# Test Animation HTML / HTM Files
+# ==============================================================================
+*.htm
+*.html
+!**/web/index.html
+**/preview.html
+**/standalone-preview.html
+**/test_animation*.htm*
+**/animation_test*.htm*
