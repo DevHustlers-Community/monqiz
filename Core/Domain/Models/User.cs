@@ -1,5 +1,5 @@
-﻿using Domain.Enums;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using Shared.Enums;
 
 namespace Domain.Models
 {

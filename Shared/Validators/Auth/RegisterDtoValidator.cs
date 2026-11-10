@@ -1,5 +1,6 @@
 using FluentValidation;
 using Shared.Dtos.Auth;
+using Shared.Enums;
 
 namespace Shared.Validators.Auth;
 
@@ -44,7 +45,7 @@ public class RegisterDtoValidator : AbstractValidator<RegisterDto>
 
         RuleFor(x => x.BloodType)
             .IsInEnum()
-            .NotEqual(Domain.Enums.BloodType.Unknown)
+            .NotEqual(BloodType.Unknown)
             .WithMessage("Please select a valid blood type.");
     }
 }

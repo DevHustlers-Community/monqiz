@@ -1,6 +1,6 @@
 using FluentValidation;
 using Shared.Dtos.Donor;
-using Domain.Enums;
+using Shared.Enums;
 
 namespace Shared.Validators.Donor;
 

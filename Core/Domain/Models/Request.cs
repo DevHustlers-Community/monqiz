@@ -1,5 +1,5 @@
-﻿using Domain.Enums;
-using Shared;
+﻿using Shared;
+using Shared.Enums;
 
 namespace Domain.Models
 {

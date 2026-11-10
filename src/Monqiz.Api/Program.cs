@@ -1,4 +1,3 @@
-using System.Text;
 using Domain.Interfaces;
 using Domain.Models;
 using FluentValidation;
@@ -12,8 +11,9 @@ using Persistence.Repositories;
 using Scalar.AspNetCore;
 using Services.Implementation;
 using ServicesAbstraction.Interfaces;
-using Shared.Dtos.Auth;
 using Shared.Validators.Auth;
+using System.Text;
+
 namespace Monqiz.Api;
 
 public class Program
@@ -61,7 +61,11 @@ public class Program
             ?? throw new InvalidOperationException("JWT Key is missing.");
 
         builder.Services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -86,7 +90,8 @@ public class Program
 
         builder.Services.AddAuthorization();
         builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
-        #endregion
+
+        #endregion Add services to the container
 
         var app = builder.Build();
         using var scope = app.Services.CreateScope();
@@ -109,7 +114,7 @@ public class Program
 
         app.MapControllers();
 
-        #endregion
+        #endregion Middlewares
 
         app.Run();
     }
