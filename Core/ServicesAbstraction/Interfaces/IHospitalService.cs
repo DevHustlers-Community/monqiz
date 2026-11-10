@@ -1,5 +1,5 @@
-﻿using Shared.Dtos;
-using Shared.Dtos.Hospital;
+﻿using Shared.Dtos.Hospital;
+using Shared.Dtos.Result;
 
 namespace ServicesAbstraction.Interfaces
 {

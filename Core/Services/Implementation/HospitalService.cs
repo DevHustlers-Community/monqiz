@@ -1,4 +1,5 @@
 ﻿using Shared.Dtos.Hospital;
+using Shared.Dtos.Result;
 
 namespace Services.Implementation
 {
