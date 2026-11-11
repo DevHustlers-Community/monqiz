@@ -1,9 +1,8 @@
 ﻿using Domain.Interfaces.Specification;
-using Shared;
 
 namespace Domain.Interfaces
 {
-    public interface IGenericRepo<TEntity> where TEntity : AsTable
+    public interface IGenericRepo<TEntity> where TEntity : class
     {
         Task<TEntity?> GetByIdAsync(Guid Id);
 

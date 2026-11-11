@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ServicesAbstraction.Interfaces;
-using Shared.Dtos;
+using Shared.Dtos.Address;
 using Shared.Dtos.Result;
 
 namespace Presentation.Controllers
@@ -11,27 +11,14 @@ namespace Presentation.Controllers
     {
         [HttpGet]
         public async Task<ActionResult<ApiResponse<IEnumerable<AddressDto>>>> GetAllAddresses(string? governorate, string? city)
-        {
-            var result = await _managerService.AddressService.GetAllAddressesAsync(governorate, city);
-            var response = ApiResponse<IEnumerable<AddressDto>>.Success(result, "Retrieved all Addresses");
-            return Ok(response);
-        }
+           => Ok(await _managerService.AddressService.GetAllAddressesAsync(governorate, city));
 
         [HttpGet("governorates")]
         public async Task<ActionResult<ApiResponse<IEnumerable<string>>>> GetAllAddresses()
-        {
-            var result = await _managerService.AddressService.GetAllGovernoratesAsync();
-
-            var response = ApiResponse<IEnumerable<string>>.Success(result, "Retrieved all Governorates");
-            return Ok(response);
-        }
+            => Ok(await _managerService.AddressService.GetAllGovernoratesAsync());
 
         [HttpGet("cities")]
         public async Task<ActionResult<ApiResponse<IEnumerable<string>>>> GetAllAddresses(string? governorate)
-        {
-            var result = await _managerService.AddressService.GetAllcitiesByGovernorateAsync(governorate);
-            var response = ApiResponse<IEnumerable<string>>.Success(result, "Retrieved all Cities");
-            return Ok(response);
-        }
+            => Ok(await _managerService.AddressService.GetAllcitiesByGovernorateAsync(governorate));
     }
 }

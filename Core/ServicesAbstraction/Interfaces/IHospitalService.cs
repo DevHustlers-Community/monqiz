@@ -7,12 +7,12 @@ namespace ServicesAbstraction.Interfaces
     {
         Task<PagenatedResult<HospitalDto>> GetAllAsync(string? governorate, string? city, int? pageIndex);
 
-        Task<HospitalDto> GetById(Guid id);
+        Task<ApiResponse<HospitalDto>> GetById(Guid id);
 
-        Task<HospitalDto> CreateAsync(HospitalCreateDto hospital);
+        Task<ApiResponse<HospitalDto>> CreateAsync(HospitalCreateDto hospital);
 
-        Task<int> UpdateAsync(Guid id, HospitalUpdateDto hospital);
+        Task<ApiResponse<int>> UpdateAsync(Guid id, HospitalUpdateDto hospital);
 
-        Task<int> DelteAsync(Guid id);
+        Task<ApiResponse<int>> DelteAsync(Guid id);
     }
 }

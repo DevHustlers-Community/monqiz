@@ -1,9 +1,8 @@
-﻿using Shared;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Domain.Interfaces.Specification
 {
-    public interface ISpecification<TEntity> where TEntity : AsTable
+    public interface ISpecification<TEntity> where TEntity : class
     {
         public Expression<Func<TEntity, bool>> WhereExpression { get; }
         public List<Expression<Func<TEntity, object>>> IncludexExpressions { get; }

@@ -3,7 +3,7 @@
     public static class SpecificationCreateQueries
     {
         public static IQueryable<TEntiy> CreateQuery<TEntiy>
-            (ISpecification<TEntiy> specification, IQueryable<TEntiy> input) where TEntiy : AsTable
+            (ISpecification<TEntiy> specification, IQueryable<TEntiy> input) where TEntiy : class
         {
             if (specification.WhereExpression is not null)
                 input = input.Where(specification.WhereExpression);

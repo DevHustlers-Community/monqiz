@@ -2,7 +2,7 @@
 
 namespace Services.Specification
 {
-    public class AddressSpecification : BaseSpecification<Address>
+    internal class AddressSpecification : BaseSpecification<Address>
     {
         public AddressSpecification(string? Governorate) :
             base(e => string.IsNullOrEmpty(Governorate) || e.Governorate == Governorate)

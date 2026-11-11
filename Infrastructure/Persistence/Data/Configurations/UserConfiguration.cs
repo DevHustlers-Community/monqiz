@@ -48,7 +48,7 @@
 
             // Ignore computed property
             builder.Ignore(e => e.FullName);
-            
+
             // Unique Indexes
             builder.HasIndex(e => e.NormalizedEmail)
                 .IsUnique()
@@ -57,7 +57,6 @@
             builder.HasIndex(e => e.PhoneNumber)
                 .IsUnique()
                 .HasFilter("[PhoneNumber] IS NOT NULL");
-
         }
     }
 }

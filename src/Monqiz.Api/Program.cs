@@ -38,6 +38,7 @@ public class Program
         builder.Services.AddScoped<IHospitalService, HospitalService>();
         builder.Services.AddScoped<IAddressService, AddressService>();
         builder.Services.AddScoped<IDataSeeding, DataSeeding>();
+        builder.Services.AddScoped<IRequestService, RequestService>();
         builder.Services.AddIdentity<User, IdentityRole<Guid>>(option =>
         {
             option.Password.RequireNonAlphanumeric = true;
