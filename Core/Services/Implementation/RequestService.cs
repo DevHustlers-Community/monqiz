@@ -28,23 +28,34 @@ namespace Services.Implementation
         public async Task<ApiResponse<int>> DeleteRequestAsync(Guid id, Guid userId)
         {
             var specification = new RequestSpecification(id, true);
-            var request = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(specification);
-            if (request is null)
+            var request = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(specification) ??
                 throw new NotFoundException("Not found request with this Id.");
-            if (request.CreatorUserId != userId)
-                return ApiResponse<int>.Failure("Not found this request in your requests.");
-            if (request.Status != RequestStatus.Pending)
-                return ApiResponse<int>.Failure("Can not delete Request without status pending.");
-            if (request.RequestAcceptances.ToList().Any())
-            {
-                request.Status = RequestStatus.Cancelled;
-                return ApiResponse<int>.Success(await _unitOfWork.SaveChanagesAsync(),
-               "The request has been successfull Cancelled not deleted because you have Acceptance.");
-            }
 
-            _unitOfWork.GetGenericRepo<Request>().Delete(request);
-            return ApiResponse<int>.Success(await _unitOfWork.SaveChanagesAsync(),
-                "The request has been successfull deleted.");
+            if (request.CreatorUserId != userId)
+                throw new ForbiddenException("Not found this request in your requests.");
+            if (request.Status == RequestStatus.Pending)
+            {
+                _unitOfWork.GetGenericRepo<Request>().Delete(request);
+                return ApiResponse<int>.Success(await _unitOfWork.SaveChanagesAsync(),
+                    "The request has been successfull deleted.");
+            }
+            else if (request.Status == RequestStatus.Approved)
+            {
+                if (request.RequestAcceptances.ToList().Any())
+                {
+                    request.Status = RequestStatus.Cancelled;
+                    return ApiResponse<int>.Success(await _unitOfWork.SaveChanagesAsync(),
+                   "The request has been successfull Cancelled not deleted because you have Acceptance.");
+                }
+                else
+                {
+                    _unitOfWork.GetGenericRepo<Request>().Delete(request);
+                    return ApiResponse<int>.Success(await _unitOfWork.SaveChanagesAsync(),
+                        "The request has been successfull deleted.");
+                }
+            }
+            else
+                throw new ConflictException("Can not delete Request without status pending.");
         }
 
         public async Task<PagenatedResult<RequestDetailsDto>> GetAllAsync(string? bloodType, int? pageIndex)
@@ -70,11 +81,12 @@ namespace Services.Implementation
         public async Task<ApiResponse<RequestDetailsDto>> GetByIdAsync(Guid id, Guid userId)
         {
             var specification = new RequestSpecification(id);
-            var request = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(specification);
-            if (request is null)
+            var request = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(specification) ??
                 throw new NotFoundException("Not Found Request with this Id.");
+
             if (request.CreatorUserId != userId)
-                return ApiResponse<RequestDetailsDto>.Failure("This request is not yours.");
+                throw new ConflictException("This request is not yours.");
+
             return ApiResponse<RequestDetailsDto>.Success(FactoryRequest.ToRequestDto(request),
                 "The request has been successfull retrieved.");
         }
@@ -82,8 +94,7 @@ namespace Services.Implementation
         public async Task<ApiResponse<IEnumerable<RequestDetailsDto>>> GetMyDonationsAsync(Guid userId)
         {
             var specification = new RequestWithAcceptedRequestSpecification(userId);
-            var requestacceptance = await _unitOfWork.GetGenericRepo<RequestAcceptance>().GetAllAsync(specification);
-            if (requestacceptance is null || !requestacceptance.Any())
+            var requestacceptance = await _unitOfWork.GetGenericRepo<RequestAcceptance>().GetAllAsync(specification) ??
                 throw new NotFoundException("Not Found accepted request with this user.");
 
             var list = requestacceptance.Select(e => FactoryRequest.ToRequestDto(e.Request)).ToArray();
@@ -103,33 +114,32 @@ namespace Services.Implementation
         public async Task<ApiResponse<int>> UpdateRequestAsync(Guid id, Guid userId, RequestCreateOrUpdateDto request)
         {
             var specification = new RequestSpecification(id, true);
-            var originRequest = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(specification);
-            if (originRequest is null)
+            var originRequest = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(specification) ??
                 throw new NotFoundException("Not Found Requst with this id.");
 
             if (originRequest.CreatorUserId != userId)
-                return ApiResponse<int>.Failure("This request is not yours.");
+                throw new ForbiddenException("This request is not yours.");
 
             var hospital = (await _unitOfWork.GetGenericRepo<Hospital>().GetByIdAsync(request.HospitalId));
             if (hospital is null || hospital.IsDeleted)
-                throw new NotFoundException($"Not Found Hospital with this id.");
+                throw new NotFoundException("Not Found Hospital with this id.");
 
             if (originRequest.RequestAcceptances.ToList().Any())
-                return ApiResponse<int>.Failure("Cannot update request because you have Acceptance.");
+                throw new ConflictException("Cannot update request because you have Acceptance.");
 
             originRequest.HospitalId = request.HospitalId;
             originRequest.BloodType = request.BloodType;
             originRequest.Details = request.Details;
             originRequest.UnitsNeeded = request.UnitsNeeded;
             originRequest.RequiredDate = request.RequiredDate;
+
             return ApiResponse<int>.Success(await _unitOfWork.SaveChanagesAsync(),
                 "The request has been successfull updated.");
         }
 
         public async Task<ApiResponse<int>> AcceptRequest(Guid requestId, Guid userId)
         {
-            var user = await _unitOfWork.GetGenericRepo<User>().GetByIdAsync(userId);
-            if (user is null)
+            var user = await _unitOfWork.GetGenericRepo<User>().GetByIdAsync(userId) ??
                 throw new NotFoundException($"Not Found user with this id.");
             if (user.LastDonationDate is not null)
             {
@@ -138,9 +148,9 @@ namespace Services.Implementation
                     return ApiResponse<int>.Failure($"The earliest date you can donate is {LastDonationDate}.");
             }
 
-            var request = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(requestId);
-            if (request is null)
+            var request = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(requestId) ??
                 throw new NotFoundException($"Not Found request with this id.");
+
             if (request.Status != RequestStatus.Approved)
                 return ApiResponse<int>.Failure($"This request is not valid now.");
 
@@ -159,13 +169,12 @@ namespace Services.Implementation
 
         public async Task<ApiResponse<int>> UpdateStatus(Guid requestId, Guid userId, RequestStatus status)
         {
-            var user = await _unitOfWork.GetGenericRepo<User>().GetByIdAsync(userId);
-            if (user is null)
+            var user = await _unitOfWork.GetGenericRepo<User>().GetByIdAsync(userId) ??
                 throw new NotFoundException("Not found user with this id.");
 
-            var request = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(requestId);
-            if (request is null)
+            var request = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(requestId) ??
                 throw new NotFoundException("Not found request with this id.");
+
             request.Status = status;
             _unitOfWork.GetGenericRepo<Request>().Update(request);
             return ApiResponse<int>.Success(await _unitOfWork.SaveChanagesAsync(),

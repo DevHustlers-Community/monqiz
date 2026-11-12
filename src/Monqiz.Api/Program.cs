@@ -3,6 +3,7 @@ using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
@@ -11,6 +12,7 @@ using Persistence.Repositories;
 using Scalar.AspNetCore;
 using Services.Implementation;
 using ServicesAbstraction.Interfaces;
+using Shared.Dtos.Result;
 using Shared.Validators.Auth;
 using System.Text;
 
@@ -48,6 +50,18 @@ public class Program
             option.User.RequireUniqueEmail = true;
         }).AddEntityFrameworkStores<MonqizDbContext>()
             .AddDefaultTokenProviders();
+
+        builder.Services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.InvalidModelStateResponseFactory = context =>
+            {
+                var errors = context.ModelState
+                    .Where(e => e.Value?.Errors.Count > 0)
+                    .ToDictionary(e => e.Key, e => e.Value!.Errors.Select(x => x.ErrorMessage).ToArray());
+
+                return new BadRequestObjectResult(ApiResponse<object>.Failure("Validation failed.", errors));
+            };
+        });
 
         // Password Security
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
