@@ -22,7 +22,7 @@ public class RegisterDtoValidator : AbstractValidator<RegisterDto>
 
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-            .Matches(@"^\+?[0-9]{10,15}$")
+            .Matches(@"^01[0125][0-9]{8}$")
             .WithMessage("Invalid phone number.");
 
         RuleFor(x => x.Password)
