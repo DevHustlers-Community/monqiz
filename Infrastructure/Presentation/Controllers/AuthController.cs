@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using FluentValidation;
 namespace Presentation.Controllers;
+using Microsoft.AspNetCore.Identity;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -22,6 +23,7 @@ public class AuthController : ControllerBase
     private readonly IValidator<RegisterDto> _registerValidator;
     private readonly IValidator<VerifyOtpDto> _verifyOtpValidator;
     private readonly IValidator<LoginDto> _loginValidator;
+    private readonly UserManager<User> _userManager;
     public AuthController(
         MonqizDbContext context,
         IPasswordService passwordService,
@@ -30,7 +32,8 @@ public class AuthController : ControllerBase
         IWebHostEnvironment environment,
         IValidator<RegisterDto> registerValidator,
         IValidator<VerifyOtpDto> verifyOtpValidator,
-        IValidator<LoginDto> loginValidator)
+        IValidator<LoginDto> loginValidator,
+        UserManager<User> userManager)
     {
         _context = context;
         _passwordService = passwordService;
@@ -40,6 +43,7 @@ public class AuthController : ControllerBase
         _registerValidator = registerValidator;
         _verifyOtpValidator = verifyOtpValidator;
         _loginValidator = loginValidator;
+        _userManager = userManager;
     }
 
     // POST: api/auth/register
@@ -172,14 +176,17 @@ public class AuthController : ControllerBase
             }));
         }
 
-        var normalizedEmail = dto.Email.Trim().ToUpperInvariant();
+        var identifier = dto.EmailOrPhone.Trim();
+
+        var normalizedEmail = identifier.ToUpperInvariant();
 
         var user = await _context.Users
             .FirstOrDefaultAsync(u =>
-                u.NormalizedEmail == normalizedEmail);
+                u.NormalizedEmail == normalizedEmail||
+                u.PhoneNumber == identifier);
 
         if (user is null)
-            return Unauthorized(new { message = "Invalid email or password." });
+            return Unauthorized(new { message = "Invalid email/phone or password." });
 
         if (user.Status != UserStatus.Active)
             return Unauthorized(new { message = "Please verify your account first." });
@@ -198,9 +205,13 @@ public class AuthController : ControllerBase
             await _context.SaveChangesAsync();
         }
 
+        var roles = await _userManager.GetRolesAsync(user);
+
         var token = _tokenService.GenerateToken(
             user.Id,
-            user.Email!);
+            user.Email!,
+            roles,
+            user.BloodType);
 
         return Ok(new
         {
