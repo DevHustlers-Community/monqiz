@@ -1,5 +1,5 @@
-﻿using Domain.Enums;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using Shared.Enums;
 
 namespace Domain.Models
 {
@@ -23,7 +23,7 @@ namespace Domain.Models
         // Many(User) to Many(Address)
         public ICollection<DonationAddress> Addresses { get; set; } = [];
 
-        // Many(User) to Many(Request)
+        // Many(User) to Many(Requestc Acceptance)
         public ICollection<RequestAcceptance> RequestAcceptances { get; set; } = [];
 
         #endregion Relations

@@ -1,9 +1,8 @@
-﻿using Domain.Enums;
-using Shared;
+﻿using Shared.Enums;
 
 namespace Domain.Models
 {
-    public class Request : AsTable
+    public class Request
     {
         public Guid Id { get; set; }
         public BloodType BloodType { get; set; }

@@ -1,4 +1,4 @@
-﻿using Domain.Enums;
+﻿using Shared.Enums;
 
 namespace Domain.Models
 {
@@ -9,7 +9,7 @@ namespace Domain.Models
 
         public Guid RequestId { get; set; }
         public Request Request { get; set; } = default!;
-        public DonationStatus AcceptanceStatus { get; set; } = default!;
+        public DonationStatus AcceptanceStatus { get; set; } = DonationStatus.Accepted;
         public DateTime CreatedAt { get; set; }
     }
 }

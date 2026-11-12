@@ -4,7 +4,7 @@
     {
         private readonly Dictionary<string, object> _repos = new();
 
-        public IGenericRepo<TEntity> GetGenericRepo<TEntity>() where TEntity : AsTable
+        public IGenericRepo<TEntity> GetGenericRepo<TEntity>() where TEntity : class
         {
             string key = typeof(TEntity).Name;
             if (!_repos.ContainsKey(key))
