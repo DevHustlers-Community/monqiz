@@ -1,5 +1,6 @@
 ﻿using Shared.Dtos.Request;
 using Shared.Dtos.Result;
+using Shared.Enums;
 
 namespace ServicesAbstraction.Interfaces
 {
@@ -18,5 +19,9 @@ namespace ServicesAbstraction.Interfaces
         Task<ApiResponse<IEnumerable<RequestDetailsDto>>> GetMyDonationsAsync(Guid userId);
 
         Task<ApiResponse<IEnumerable<RequestDetailsDto>>> GetMyRequestAsync(Guid userId);
+
+        Task<ApiResponse<int>> AcceptRequest(Guid requestId, Guid userId);
+
+        Task<ApiResponse<int>> UpdateStatus(Guid requestId, Guid userId, RequestStatus status);
     }
 }

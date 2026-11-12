@@ -10,7 +10,7 @@
         public static ApiResponse<TData> Success(TData data, string message = "")
         => new ApiResponse<TData>
         {
-            IsSuccess = false,
+            IsSuccess = true,
             Message = message,
             Data = data
         };
@@ -18,7 +18,7 @@
         public static ApiResponse<TData> Failure(string message, List<string>? errors = null)
         => new ApiResponse<TData>
         {
-            IsSuccess = true,
+            IsSuccess = false,
             Message = message,
             Errors = errors
         };

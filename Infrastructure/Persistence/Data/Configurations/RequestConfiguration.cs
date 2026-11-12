@@ -9,6 +9,7 @@
             builder.Property(e => e.Status).HasConversion(e => e.ToString(), e => Enum.Parse<RequestStatus>(e))
                 .HasMaxLength(20);
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(e => e.Details).HasMaxLength(200);
             builder.HasOne(r => r.User).WithMany(u => u.Requests)
                 .HasForeignKey(r => r.CreatorUserId).OnDelete(DeleteBehavior.Restrict);
         }

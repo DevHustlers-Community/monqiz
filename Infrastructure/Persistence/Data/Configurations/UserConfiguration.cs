@@ -9,15 +9,15 @@
 
             // String properties
             builder.Property(e => e.FirstName)
-                .HasMaxLength(15)
+                .HasMaxLength(20)
                 .IsRequired();
 
             builder.Property(e => e.LastName)
-                .HasMaxLength(15)
+                .HasMaxLength(20)
                 .IsRequired();
 
             builder.Property(e => e.Email)
-                .HasMaxLength(100);
+                .HasMaxLength(150);
 
             // Enum properties
             builder.Property(e => e.Gender)

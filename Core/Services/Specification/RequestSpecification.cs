@@ -18,7 +18,7 @@ namespace Services.Specification
         }
 
         public RequestSpecification(BloodType blood) :
-            base(e => (blood == BloodType.Unknown ? true : e.BloodType == blood) && (e.Status == RequestStatus.Pending))
+            base(e => (blood == BloodType.Unknown ? true : e.BloodType == blood) && (e.Status == RequestStatus.Approved))
         {
         }
 

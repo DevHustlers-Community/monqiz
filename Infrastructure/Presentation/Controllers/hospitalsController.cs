@@ -25,7 +25,8 @@ namespace Presentation.Controllers
         public async Task<ActionResult<ApiResponse<HospitalDto>>> Create(HospitalCreateDto hospital)
              => Ok(await _managerService.HospitalService.CreateAsync(hospital));
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<ApiResponse<int>>> Update(Guid id, HospitalUpdateDto hospital)
             => Ok(await _managerService.HospitalService.UpdateAsync(id, hospital));

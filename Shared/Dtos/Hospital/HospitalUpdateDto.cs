@@ -4,7 +4,7 @@ namespace Shared.Dtos.Hospital
 {
     public record HospitalUpdateDto
     {
-        [Required, Phone]
+        [Required, Phone, MaxLength(20)]
         public string PhoneNumber { get; init; } = string.Empty;
 
         [Required, MaxLength(200)]

@@ -33,7 +33,7 @@ namespace Services.Implementation
         public async Task<ApiResponse<int>> DelteAsync(Guid id)
         {
             var hospital = await _unitOfWork.GetGenericRepo<Hospital>().GetByIdAsync(id);
-            if (hospital is null) throw new NotFoundException($"Not Found Hospital with id : {id}");
+            if (hospital is null) throw new NotFoundException("Not Found Hospital with this id.");
             if (hospital.IsDeleted)
                 return ApiResponse<int>.Failure("The hospital was previously deleted.");
             hospital.IsDeleted = true;
@@ -50,7 +50,7 @@ namespace Services.Implementation
             var result = await _unitOfWork.GetGenericRepo<Hospital>().GetAllAsync(specification);
             var hospitals = result.Select(FactoryHospitals.ToHospitalDto).ToArray();
 
-            return new PagenatedResult<HospitalDto>(pageIndex.HasValue ? pageIndex.Value : 0, hospitals.Length,
+            return new PagenatedResult<HospitalDto>(pageIndex.Value, hospitals.Length,
                 totalCount)
             {
                 Dates = hospitals,
@@ -61,7 +61,7 @@ namespace Services.Implementation
         {
             var specification = new HospitalSpecification(id);
             var hospital = await _unitOfWork.GetGenericRepo<Hospital>().GetByIdAsync(specification);
-            if (hospital is null) throw new NotFoundException($"Not Found Hospital with id : {id}.");
+            if (hospital is null) throw new NotFoundException("Not Found Hospital with this id.");
             if (hospital.IsDeleted) return ApiResponse<HospitalDto>.Failure("The hospital was previously deleted.");
             return ApiResponse<HospitalDto>.Success(FactoryHospitals.ToHospitalDto(hospital),
                 "The hospital has been successfull deleted.");
@@ -70,7 +70,7 @@ namespace Services.Implementation
         public async Task<ApiResponse<int>> UpdateAsync(Guid id, HospitalUpdateDto hospital)
         {
             var originalHospital = await _unitOfWork.GetGenericRepo<Hospital>().GetByIdAsync(id);
-            if (originalHospital is null) throw new NotFoundException($"Not Found Hospital with id : {id}");
+            if (originalHospital is null) throw new NotFoundException("Not Found Hospital with this id.");
             if (originalHospital.IsDeleted) return ApiResponse<int>.Failure("The hospital was previously deleted.");
 
             originalHospital.Email = hospital.Email;

@@ -2,7 +2,6 @@
 {
     public enum DonationStatus : byte
     {
-        Pending,
         Accepted,
         Completed,
         Cancelled
