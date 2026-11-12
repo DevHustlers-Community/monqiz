@@ -70,8 +70,7 @@ namespace Persistence.Data
                 user.EmailConfirmed = true;
                 user.PhoneNumberConfirmed = true;
                 await userManager.CreateAsync(user, "P@ssw0rd");
-
-                await userManager.AddToRoleAsync(user, (user.UserName != "Manuel" ? "User" : "Admin"));
+                await userManager.AddToRoleAsync(user, (items.LastOrDefault() != user ? "User" : "Admin"));
             }
         }
 

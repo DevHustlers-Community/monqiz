@@ -1,6 +1,6 @@
 ﻿namespace Persistence.Repositories
 {
-    public class GenericRepo<TEntity>(MonqizDbContext _dbContext) : IGenericRepo<TEntity> where TEntity : AsTable
+    public class GenericRepo<TEntity>(MonqizDbContext _dbContext) : IGenericRepo<TEntity> where TEntity : class
     {
         public async Task AddAsync(TEntity entity) => await _dbContext.AddAsync(entity);
 

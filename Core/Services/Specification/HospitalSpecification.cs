@@ -2,7 +2,7 @@
 
 namespace Services.Specification
 {
-    public class HospitalSpecification : BaseSpecification<Hospital>
+    internal class HospitalSpecification : BaseSpecification<Hospital>
     {
         public HospitalSpecification(Guid id) :
             base(e => (e.Id == id && e.IsDeleted == false))

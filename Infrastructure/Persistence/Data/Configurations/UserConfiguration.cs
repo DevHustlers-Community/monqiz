@@ -9,15 +9,15 @@
 
             // String properties
             builder.Property(e => e.FirstName)
-                .HasMaxLength(15)
+                .HasMaxLength(20)
                 .IsRequired();
 
             builder.Property(e => e.LastName)
-                .HasMaxLength(15)
+                .HasMaxLength(20)
                 .IsRequired();
 
             builder.Property(e => e.Email)
-                .HasMaxLength(100);
+                .HasMaxLength(150);
 
             // Enum properties
             builder.Property(e => e.Gender)
@@ -48,7 +48,7 @@
 
             // Ignore computed property
             builder.Ignore(e => e.FullName);
-            
+
             // Unique Indexes
             builder.HasIndex(e => e.NormalizedEmail)
                 .IsUnique()
@@ -57,7 +57,6 @@
             builder.HasIndex(e => e.PhoneNumber)
                 .IsUnique()
                 .HasFilter("[PhoneNumber] IS NOT NULL");
-
         }
     }
 }

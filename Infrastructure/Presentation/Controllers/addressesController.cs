@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ServicesAbstraction.Interfaces;
-using Shared.Dtos;
+using Shared.Dtos.Address;
+using Shared.Dtos.Result;
 
 namespace Presentation.Controllers
 {
@@ -9,15 +10,15 @@ namespace Presentation.Controllers
     public class addressesController(IManagerService _managerService) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AddressDto>>> GetAllAddresses(string? governorate, string? city)
-            => Ok(await _managerService.AddressService.GetAllAddressesAsync(governorate, city));
+        public async Task<ActionResult<ApiResponse<IEnumerable<AddressDto>>>> GetAllAddresses(string? governorate, string? city)
+           => Ok(await _managerService.AddressService.GetAllAddressesAsync(governorate, city));
 
         [HttpGet("governorates")]
-        public async Task<ActionResult<IEnumerable<string>>> GetAllAddresses()
+        public async Task<ActionResult<ApiResponse<IEnumerable<string>>>> GetAllAddresses()
             => Ok(await _managerService.AddressService.GetAllGovernoratesAsync());
 
         [HttpGet("cities")]
-        public async Task<ActionResult<IEnumerable<string>>> GetAllAddresses(string? governorate)
+        public async Task<ActionResult<ApiResponse<IEnumerable<string>>>> GetAllAddresses(string? governorate)
             => Ok(await _managerService.AddressService.GetAllcitiesByGovernorateAsync(governorate));
     }
 }

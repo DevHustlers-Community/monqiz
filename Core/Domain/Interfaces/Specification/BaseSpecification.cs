@@ -1,9 +1,8 @@
-﻿using Shared;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Domain.Interfaces.Specification
 {
-    public abstract class BaseSpecification<TEntity> : ISpecification<TEntity> where TEntity : AsTable
+    public abstract class BaseSpecification<TEntity> : ISpecification<TEntity> where TEntity : class
     {
         #region Where
 

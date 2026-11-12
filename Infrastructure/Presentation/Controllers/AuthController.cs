@@ -1,13 +1,14 @@
-using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Persistence.Data;
-using Shared.Dtos.Auth;
-using ServicesAbstraction.Interfaces;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using FluentValidation;
+using Persistence.Data;
+using ServicesAbstraction.Interfaces;
+using Shared.Dtos.Auth;
+using Shared.Enums;
+
 namespace Presentation.Controllers;
 
 [ApiController]
@@ -22,6 +23,7 @@ public class AuthController : ControllerBase
     private readonly IValidator<RegisterDto> _registerValidator;
     private readonly IValidator<VerifyOtpDto> _verifyOtpValidator;
     private readonly IValidator<LoginDto> _loginValidator;
+
     public AuthController(
         MonqizDbContext context,
         IPasswordService passwordService,
