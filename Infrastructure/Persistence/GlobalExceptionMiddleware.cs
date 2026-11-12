@@ -34,6 +34,7 @@ namespace Persistence
             NotFoundException e => (StatusCodes.Status404NotFound, e.Message),
             ConflictException e => (StatusCodes.Status409Conflict, e.Message),
             ForbiddenException e => (StatusCodes.Status403Forbidden, e.Message),
+            BadRequestException e => (StatusCodes.Status400BadRequest, e.Message),
             DbUpdateException { InnerException: SqlException { Number: 547 } }
                 => (StatusCodes.Status409Conflict, "The item is linked to other data and cannot be deleted."),
             DbUpdateException { InnerException: SqlException { Number: 2601 or 2627 } }

@@ -11,6 +11,7 @@ namespace Domain.Models
         public DateTime? RequiredDate { get; set; }
         public RequestStatus Status { get; set; } = RequestStatus.Pending;
         public string? Details { get; set; }
+        public byte[] RowVersion { get; set; } = [];
 
         #region Relations
 

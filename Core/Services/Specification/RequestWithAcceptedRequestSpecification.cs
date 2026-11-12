@@ -8,6 +8,8 @@ namespace Services.Specification
             : base(e => e.UserId == userId)
         {
             AddIncluding(e => e.Request);
+            AddIncluding(e => e.Request.Hospital);
+            AddIncluding(e => e.Request.Hospital.Address);
         }
     }
 }

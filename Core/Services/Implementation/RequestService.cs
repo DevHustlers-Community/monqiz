@@ -7,10 +7,19 @@ namespace Services.Implementation
     {
         public async Task<ApiResponse<RequestDetailsDto>> CreateRequestAsync(RequestCreateOrUpdateDto request, Guid userId)
         {
+            if (request.BloodType == BloodType.Unknown)
+                throw new BadRequestException("Can not create request without blood type.");
+            if (request.RequiredDate < DateTime.UtcNow)
+                throw new BadRequestException("Can not create request old date.");
+
             var specification = new HospitalSpecification(request.HospitalId);
             var hospital = await _unitOfWork.GetGenericRepo<Hospital>().GetByIdAsync(specification);
             if (hospital is null || hospital.IsDeleted)
                 throw new NotFoundException($"Not Found hospital with this id.");
+            var user = await _unitOfWork.GetGenericRepo<User>().GetByIdAsync(userId) ??
+                throw new NotFoundException("Not found user with this id");
+            if (user.Status != UserStatus.Active)
+                throw new ForbiddenException("This user is not active");
 
             Request originRequest = FactoryRequest.ToRequest(request);
             originRequest.CreatorUserId = userId;
@@ -61,7 +70,7 @@ namespace Services.Implementation
         public async Task<PagenatedResult<RequestDetailsDto>> GetAllAsync(string? bloodType, int? pageIndex)
         {
             if (!Enum.TryParse(bloodType, out BloodType blood) && !string.IsNullOrEmpty(bloodType))
-                throw new NotFoundException("Not Found this Blood type");
+                throw new BadRequestException("Invalid blood type.");
             if (!pageIndex.HasValue || pageIndex.Value <= 0)
                 pageIndex = 1;
 
@@ -119,6 +128,8 @@ namespace Services.Implementation
 
             if (originRequest.CreatorUserId != userId)
                 throw new ForbiddenException("This request is not yours.");
+            if (originRequest.Status != RequestStatus.Pending)
+                throw new ConflictException("Only pending requests can be updated.");
 
             var hospital = (await _unitOfWork.GetGenericRepo<Hospital>().GetByIdAsync(request.HospitalId));
             if (hospital is null || hospital.IsDeleted)
@@ -141,18 +152,25 @@ namespace Services.Implementation
         {
             var user = await _unitOfWork.GetGenericRepo<User>().GetByIdAsync(userId) ??
                 throw new NotFoundException($"Not Found user with this id.");
-            if (user.LastDonationDate is not null)
-            {
-                var LastDonationDate = user.LastDonationDate.Value.AddMonths(user.Gender == Gender.Male ? 3 : 4);
-                if (DateOnly.FromDateTime(DateTime.UtcNow) < LastDonationDate)
-                    return ApiResponse<int>.Failure($"The earliest date you can donate is {LastDonationDate}.");
-            }
+
+            if (user.Status != UserStatus.Active)
+                throw new ForbiddenException("This user is not active");
 
             var request = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(requestId) ??
                 throw new NotFoundException($"Not Found request with this id.");
 
+            if (request.CreatorUserId == userId)
+                throw new ForbiddenException("You cannot accept your own request.");
+
             if (request.Status != RequestStatus.Approved)
-                return ApiResponse<int>.Failure($"This request is not valid now.");
+                throw new ConflictException("This request is not open for donations.");
+
+            if (user.LastDonationDate is not null)
+            {
+                var LastDonationDate = user.LastDonationDate.Value.AddMonths(user.Gender == Gender.Male ? 3 : 4);
+                if (DateOnly.FromDateTime(DateTime.UtcNow) < LastDonationDate)
+                    throw new ConflictException($"The earliest date you can donate is {LastDonationDate}.");
+            }
 
             if (request.UnitsNeeded == 1) request.Status = RequestStatus.Fulfilled;
             request.UnitsNeeded--;

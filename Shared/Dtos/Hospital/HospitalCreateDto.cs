@@ -5,7 +5,7 @@ namespace Shared.Dtos.Hospital
 {
     public record HospitalCreateDto
     {
-        [Required, Phone]
+        [Required, Phone, MaxLength(20)]
         public string PhoneNumber { get; init; } = string.Empty;
 
         [Required, MaxLength(200)]
