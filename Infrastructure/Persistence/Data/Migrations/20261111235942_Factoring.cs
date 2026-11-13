@@ -34,6 +34,13 @@ namespace Persistence.Data.Migrations
                 oldType: "nvarchar(100)",
                 oldMaxLength: 100);
 
+            // The phone index may already exist in databases created from the current model
+            // before this migration was added. Drop it before altering its indexed column.
+            migrationBuilder.Sql(
+                "IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_AspNetUsers_PhoneNumber' " +
+                "AND object_id = OBJECT_ID(N'[AspNetUsers]')) " +
+                "DROP INDEX [IX_AspNetUsers_PhoneNumber] ON [AspNetUsers];");
+
             migrationBuilder.AlterColumn<string>(
                 name: "PhoneNumber",
                 table: "AspNetUsers",

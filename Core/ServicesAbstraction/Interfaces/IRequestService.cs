@@ -23,5 +23,8 @@ namespace ServicesAbstraction.Interfaces
         Task<ApiResponse<int>> AcceptRequest(Guid requestId, Guid userId);
 
         Task<ApiResponse<int>> UpdateStatus(Guid requestId, Guid userId, RequestStatus status);
+
+        Task<ApiResponse<IEnumerable<RequestAcceptanceDto>>>
+    GetRequestAcceptancesAsync(Guid requestId, Guid userId, bool isAdmin);
     }
 }

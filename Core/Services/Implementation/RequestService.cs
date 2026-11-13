@@ -1,6 +1,7 @@
 ﻿using Shared.Dtos.Request;
 using Shared.Enums;
-
+using Services.Specification;
+using Domain.Models;
 namespace Services.Implementation
 {
     public class RequestService(IUnitOfWork _unitOfWork) : IRequestService
@@ -171,5 +172,44 @@ namespace Services.Implementation
             return ApiResponse<int>.Success(await _unitOfWork.SaveChanagesAsync(),
                 $"The request status has been changed to {status.ToString()}.");
         }
+
+
+
+        public async Task<ApiResponse<IEnumerable<RequestAcceptanceDto>>>
+            GetRequestAcceptancesAsync(Guid requestId, Guid userId, bool isAdmin)
+        {
+            var request = await _unitOfWork
+                .GetGenericRepo<Request>()
+                .GetByIdAsync(requestId);
+
+            if (request is null)
+                throw new NotFoundException("Request not found.");
+
+           
+            if (request.CreatorUserId != userId && !isAdmin)
+                return ApiResponse<IEnumerable<RequestAcceptanceDto>>
+                    .Failure("You are not allowed to view these acceptances.");
+
+            var specification = new RequestAcceptancesSpecification(requestId);
+
+            var acceptances = await _unitOfWork
+                .GetGenericRepo<RequestAcceptance>()
+                .GetAllAsync(specification);
+
+           
+            var result = acceptances.Select(e => new RequestAcceptanceDto
+            {
+                DonorFullName = e.User.FullName,
+                DonorPhoneNumber = e.User.PhoneNumber ?? string.Empty,
+                BloodType = e.User.BloodType,
+                Status = e.AcceptanceStatus,
+                CreatedAt = e.CreatedAt
+            }).ToList();
+
+            return ApiResponse<IEnumerable<RequestAcceptanceDto>>
+                .Success(result, "Request acceptances retrieved successfully.");
+        }
+
+
     }
 }

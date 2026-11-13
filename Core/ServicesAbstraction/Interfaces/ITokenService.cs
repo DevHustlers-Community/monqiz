@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Domain.Enums;
+using Shared.Enums;
 namespace ServicesAbstraction.Interfaces
 {
     public interface ITokenService
