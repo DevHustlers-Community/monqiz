@@ -72,6 +72,25 @@ namespace Presentation.Controllers
             return Ok(result);
         }
 
+        [Authorize]
+        [HttpPatch("{requestId:guid}/acceptances/{acceptanceId:guid}/status")]
+        public async Task<ActionResult<ApiResponse<int>>> 
+            UpdateAcceptanceStatus(Guid requestId,Guid acceptanceId, 
+            UpdateAcceptanceStatusDto dto)
+        {
+            var userId = GetCurrentUserId();
 
+            if (userId is null)
+                return Unauthorized();
+
+            var result = await _requestService.UpdateAcceptanceStatusAsync(
+                requestId,
+                acceptanceId,
+                userId.Value,
+                User.IsInRole("Admin"),
+                dto.Status);
+
+            return Ok(result);
+        }
     }
 }

@@ -4,8 +4,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Shared.Enums;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using ServicesAbstraction.Interfaces;
 
 namespace Services.Implementation;

@@ -211,5 +211,78 @@ namespace Services.Implementation
         }
 
 
+        public async Task<ApiResponse<int>> 
+            UpdateAcceptanceStatusAsync(Guid requestId,Guid donorId,Guid currentUserId,
+            bool isAdmin,DonationStatus status)
+        {
+            // 1 Completed / Cancelled status
+            if (status != DonationStatus.Completed &&
+                status != DonationStatus.Cancelled)
+            {
+                return ApiResponse<int>.Failure(
+                    "Only Completed or Cancelled status is allowed.");
+            }
+
+            // 2. Get the acceptance with its User and Request
+            var specification = new RequestAcceptanceByIdSpecification(
+                requestId,
+                donorId);
+            
+            var acceptance = await _unitOfWork
+                .GetGenericRepo<RequestAcceptance>()
+                .GetByIdAsync(specification);
+
+            if (acceptance is null)
+                throw new NotFoundException("Request acceptance not found.");
+
+            var request = acceptance.Request;
+
+            // 3. Check authorization
+            if (request.CreatorUserId != currentUserId && !isAdmin)
+            {
+                return ApiResponse<int>.Failure(
+                    "You are not allowed to update this acceptance.");
+            }
+
+            // 4. Prevent updating the same acceptance twice
+            if (acceptance.AcceptanceStatus != DonationStatus.Accepted)
+            {
+                return ApiResponse<int>.Failure(
+                    "This acceptance has already been processed.");
+            }
+
+            // 5. Handle Completed status
+            if (status == DonationStatus.Completed)
+            {
+                if (request.Status != RequestStatus.Approved)
+                {
+                    return ApiResponse<int>.Failure(
+                        "Only approved requests can have completed donations.");
+                }
+                if (request.UnitsNeeded <= 0)
+                {
+                    return ApiResponse<int>.Failure(
+                        "All required units have already been donated.");
+                }
+
+                acceptance.User.LastDonationDate =
+                    DateOnly.FromDateTime(DateTime.UtcNow);
+
+                request.UnitsNeeded--;
+
+                if (request.UnitsNeeded == 0)
+                    request.Status = RequestStatus.Fulfilled;
+            }
+
+            // 6. Update status
+            acceptance.AcceptanceStatus = status;
+
+            // 7. Save all changes together
+            var result = await _unitOfWork.SaveChanagesAsync();
+
+            return ApiResponse<int>.Success(
+                result,
+                "Acceptance status updated successfully.");
+        }
     }
 }
