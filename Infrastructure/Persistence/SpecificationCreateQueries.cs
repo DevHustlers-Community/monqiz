@@ -15,9 +15,25 @@
             }
 
             if (specification.OrderedByExpression is not null)
-                input = input.OrderBy(specification.OrderedByExpression);
+            {
+                var ordered = input.OrderBy(specification.OrderedByExpression);
+                if (specification.ThenByAscExpression is not null)
+                    ordered.ThenBy(specification.ThenByAscExpression);
+                else if (specification.ThenByDescExpression is not null)
+                    ordered.ThenByDescending(specification.ThenByDescExpression);
+
+                input = ordered;
+            }
             else if (specification.OrderedByDescExpression is not null)
-                input = input.OrderByDescending(specification.OrderedByDescExpression);
+            {
+                var ordered = input.OrderByDescending(specification.OrderedByDescExpression);
+                if (specification.ThenByAscExpression is not null)
+                    ordered.ThenBy(specification.ThenByAscExpression);
+                else if (specification.ThenByDescExpression is not null)
+                    ordered.ThenByDescending(specification.ThenByDescExpression);
+
+                input = ordered;
+            }
 
             if (specification.IsPagenation)
                 input = input.Skip(specification.Skip).Take(specification.Take);

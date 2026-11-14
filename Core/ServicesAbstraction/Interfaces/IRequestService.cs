@@ -14,7 +14,7 @@ namespace ServicesAbstraction.Interfaces
 
         Task<PagenatedResult<RequestDetailsDto>> GetAllAsync(string? bloodType, int? pageIndex);
 
-        Task<ApiResponse<RequestDetailsDto>> GetByIdAsync(Guid id, Guid userId);
+        Task<ApiResponse<RequestDetailsDto>> GetByIdAsync(Guid id);
 
         Task<ApiResponse<IEnumerable<RequestDetailsDto>>> GetMyDonationsAsync(Guid userId);
 

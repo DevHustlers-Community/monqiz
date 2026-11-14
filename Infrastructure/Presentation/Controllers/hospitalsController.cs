@@ -31,7 +31,8 @@ namespace Presentation.Controllers
         public async Task<ActionResult<ApiResponse<int>>> Update(Guid id, HospitalUpdateDto hospital)
             => Ok(await _managerService.HospitalService.UpdateAsync(id, hospital));
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult<ApiResponse<int>>> Delete(Guid id)
         => Ok(await _managerService.HospitalService.DelteAsync(id));

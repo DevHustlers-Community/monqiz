@@ -26,6 +26,9 @@ namespace Domain.Models
         // Many(User) to Many(Requestc Acceptance)
         public ICollection<RequestAcceptance> RequestAcceptances { get; set; } = [];
 
+        // 1 (User) to Many (Notifications)
+        public ICollection<Notifications> Notifications { get; set; } = [];
+
         #endregion Relations
     }
 }

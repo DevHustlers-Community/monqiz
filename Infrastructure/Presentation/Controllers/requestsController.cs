@@ -31,7 +31,7 @@ namespace Presentation.Controllers
         [Authorize]
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<ApiResponse<RequestDetailsDto>>> GetById(Guid id)
-         => Ok(await _requestService.GetByIdAsync(id, GetCurrentUserId()!.Value));
+         => Ok(await _requestService.GetByIdAsync(id));
 
         [HttpGet("created")]
         [Authorize]

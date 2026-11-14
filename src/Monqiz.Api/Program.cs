@@ -41,6 +41,11 @@ public class Program
         builder.Services.AddScoped<IAddressService, AddressService>();
         builder.Services.AddScoped<IDataSeeding, DataSeeding>();
         builder.Services.AddScoped<IRequestService, RequestService>();
+        builder.Services.AddScoped<IDonorMatchingService, DonorMatchingService>();
+        builder.Services.AddScoped<IDonorMatchingRepo, DonorMatchingRepo>();
+        builder.Services.AddScoped<INotificationService, NotificationService>();
+        builder.Services.AddScoped<INotificationRepo, NotificationRepo>();
+
         builder.Services.AddIdentity<User, IdentityRole<Guid>>(option =>
         {
             option.Password.RequireNonAlphanumeric = true;

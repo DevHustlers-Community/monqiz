@@ -100,6 +100,53 @@ namespace Persistence.Data.Migrations
                     b.ToTable("Hospitals");
                 });
 
+            modelBuilder.Entity("Domain.Models.Notifications", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<Guid>("RequestId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId");
+
+                    b.HasIndex("UserId")
+                        .HasFilter("[IsRead] = 0");
+
+                    b.HasIndex("UserId1");
+
+                    b.HasIndex("UserId", "CreateAt")
+                        .IsDescending(false, true);
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("Domain.Models.Request", b =>
                 {
                     b.Property<Guid>("Id")
@@ -442,6 +489,29 @@ namespace Persistence.Data.Migrations
                     b.Navigation("Address");
                 });
 
+            modelBuilder.Entity("Domain.Models.Notifications", b =>
+                {
+                    b.HasOne("Domain.Models.Request", "Request")
+                        .WithMany()
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.User", null)
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId1");
+
+                    b.Navigation("Request");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Models.Request", b =>
                 {
                     b.HasOne("Domain.Models.User", "User")
@@ -551,6 +621,8 @@ namespace Persistence.Data.Migrations
             modelBuilder.Entity("Domain.Models.User", b =>
                 {
                     b.Navigation("Addresses");
+
+                    b.Navigation("Notifications");
 
                     b.Navigation("RequestAcceptances");
 

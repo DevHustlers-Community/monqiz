@@ -3,7 +3,7 @@ using Shared.Enums;
 
 namespace Services.Implementation
 {
-    public class RequestService(IUnitOfWork _unitOfWork) : IRequestService
+    public class RequestService(IUnitOfWork _unitOfWork, INotificationService _notification) : IRequestService
     {
         public async Task<ApiResponse<RequestDetailsDto>> CreateRequestAsync(RequestCreateOrUpdateDto request, Guid userId)
         {
@@ -79,7 +79,7 @@ namespace Services.Implementation
             var result = requests.Select(FactoryRequest.ToRequestDto).ToArray();
 
             var totalSpecification = new RequestSpecification(blood);
-            var totalCount = (await _unitOfWork.GetGenericRepo<Request>().GetAllAsync(totalSpecification)).Count();
+            var totalCount = await _unitOfWork.GetGenericRepo<Request>().GetCountAsync(totalSpecification);
 
             return new PagenatedResult<RequestDetailsDto>(pageIndex.Value, result.Count(), totalCount)
             {
@@ -87,14 +87,11 @@ namespace Services.Implementation
             };
         }
 
-        public async Task<ApiResponse<RequestDetailsDto>> GetByIdAsync(Guid id, Guid userId)
+        public async Task<ApiResponse<RequestDetailsDto>> GetByIdAsync(Guid id)
         {
             var specification = new RequestSpecification(id);
             var request = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(specification) ??
                 throw new NotFoundException("Not Found Request with this Id.");
-
-            if (request.CreatorUserId != userId)
-                throw new ConflictException("This request is not yours.");
 
             return ApiResponse<RequestDetailsDto>.Success(FactoryRequest.ToRequestDto(request),
                 "The request has been successfull retrieved.");
@@ -195,6 +192,10 @@ namespace Services.Implementation
 
             request.Status = status;
             _unitOfWork.GetGenericRepo<Request>().Update(request);
+
+            if (status == RequestStatus.Approved)
+                await _notification.CreateNotificationToBloodDonationRequest(request.Id);
+
             return ApiResponse<int>.Success(await _unitOfWork.SaveChanagesAsync(),
                 $"The request status has been changed to {status.ToString()}.");
         }

@@ -4,6 +4,8 @@
     {
         public async Task AddAsync(TEntity entity) => await _dbContext.AddAsync(entity);
 
+        public async Task AddRangeAsync(IEnumerable<TEntity> entities) => await _dbContext.AddRangeAsync(entities);
+
         public void Delete(TEntity entity) => _dbContext.Remove(entity);
 
         public async Task<IEnumerable<TEntity>> GetAllAsync(bool withTracking = false)
