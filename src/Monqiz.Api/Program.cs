@@ -1,20 +1,8 @@
 using Domain.Interfaces;
-using Domain.Models;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Persistence;
-using Persistence.Data;
-using Persistence.Repositories;
 using Scalar.AspNetCore;
-using Services.Implementation;
-using ServicesAbstraction.Interfaces;
-using Shared.Dtos.Result;
 using Shared.Validators.Auth;
-using System.Text;
 
 namespace Monqiz.Api;
 
@@ -26,86 +14,11 @@ public class Program
 
         #region Add services to the container
 
+        builder.Services.AddMyServices(builder.Configuration);
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
 
-        builder.Services.AddDbContext<MonqizDbContext>(options =>
-        {
-            options.UseSqlServer(
-                builder.Configuration.GetConnectionString("DefaultConnection"));
-        });
-        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-        builder.Services.AddScoped<IAddressRepo, AddressRepo>();
-        builder.Services.AddScoped<IHospitalService, HospitalService>();
-        builder.Services.AddScoped<IAddressService, AddressService>();
-        builder.Services.AddScoped<IDataSeeding, DataSeeding>();
-        builder.Services.AddScoped<IRequestService, RequestService>();
-        builder.Services.AddScoped<IDonorMatchingService, DonorMatchingService>();
-        builder.Services.AddScoped<IDonorMatchingRepo, DonorMatchingRepo>();
-        builder.Services.AddScoped<INotificationService, NotificationService>();
-        builder.Services.AddScoped<INotificationRepo, NotificationRepo>();
-
-        builder.Services.AddIdentity<User, IdentityRole<Guid>>(option =>
-        {
-            option.Password.RequireNonAlphanumeric = true;
-            option.Password.RequireLowercase = true;
-            option.Password.RequireUppercase = true;
-            option.Password.RequireDigit = true;
-            option.User.RequireUniqueEmail = true;
-        }).AddEntityFrameworkStores<MonqizDbContext>()
-            .AddDefaultTokenProviders();
-
-        builder.Services.Configure<ApiBehaviorOptions>(options =>
-        {
-            options.InvalidModelStateResponseFactory = context =>
-            {
-                var errors = context.ModelState
-                    .Where(e => e.Value?.Errors.Count > 0)
-                    .ToDictionary(e => e.Key, e => e.Value!.Errors.Select(x => x.ErrorMessage).ToArray());
-
-                return new BadRequestObjectResult(ApiResponse<object>.Failure("Validation failed.", errors));
-            };
-        });
-
-        // Password Security
-        builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-        builder.Services.AddScoped<IPasswordService, PasswordService>();
-
-        // JWT Token Service
-        builder.Services.AddScoped<ITokenService, TokenService>();
-
-        // JWT Authentication
-        var jwtSettings = builder.Configuration.GetSection("Jwt");
-        var secretKey = jwtSettings["Key"]
-            ?? throw new InvalidOperationException("JWT Key is missing.");
-
-        builder.Services
-            .AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidIssuer = jwtSettings["Issuer"],
-
-                    ValidateAudience = true,
-                    ValidAudience = jwtSettings["Audience"],
-
-                    ValidateLifetime = true,
-
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(secretKey)),
-
-                    ClockSkew = TimeSpan.Zero
-                };
-            });
         builder.Services.AddMemoryCache();
-        builder.Services.AddScoped<IOtpService, OtpService>();
 
         builder.Services.AddAuthorization();
         builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
