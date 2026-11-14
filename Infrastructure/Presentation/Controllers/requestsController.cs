@@ -1,24 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using ServicesAbstraction.Interfaces;
-using Shared.Dtos.Request;
-using Shared.Dtos.Result;
-using Shared.Enums;
-using System.Security.Claims;
+﻿using Shared.Dtos.Request;
 
 namespace Presentation.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class requestsController(IRequestService _requestService) : ControllerBase
+    public class requestsController(IRequestService _requestService) : ApiBaseController
     {
-        private Guid? GetCurrentUserId()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            return Guid.TryParse(userId, out var id) ? id : null;
-        }
-
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<ApiResponse<RequestDetailsDto>>> Create(RequestCreateOrUpdateDto request)

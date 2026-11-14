@@ -1,21 +1,15 @@
 using Domain.Models;
 using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Data;
 using Shared.Dtos.Donor;
-using Shared.Enums;
-using System.Security.Claims;
 
 namespace Presentation.Controllers;
 
-[ApiController]
-[Route("api/users")]
 [Authorize]
-public class UsersController : ControllerBase
+public class UsersController : ApiBaseController
 {
     private readonly MonqizDbContext _context;
     private readonly IWebHostEnvironment _environment;
@@ -32,13 +26,6 @@ public class UsersController : ControllerBase
         _environment = environment;
         _profileValidator = profileValidator;
         _addressesValidator = addressesValidator;
-    }
-
-    private Guid? GetCurrentUserId()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        return Guid.TryParse(userId, out var id) ? id : null;
     }
 
     // GET: api/users/profile

@@ -1,23 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using ServicesAbstraction.Interfaces;
-using Shared.Dtos;
-using Shared.Dtos.Result;
-using System.Security.Claims;
+﻿using Shared.Dtos;
 
 namespace Presentation.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class notificationController(INotificationService _notification) : ControllerBase
+    public class notificationController(INotificationService _notification) : ApiBaseController
     {
-        private Guid? GetCurrentUserId()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            return Guid.TryParse(userId, out var id) ? id : null;
-        }
-
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<PagenatedResult<NotificationsDto>>> GetUnreaded(int? pageIndex)

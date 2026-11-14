@@ -1,19 +1,14 @@
 using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Persistence.Data;
-using ServicesAbstraction.Interfaces;
 using Shared.Dtos.Auth;
-using Shared.Enums;
 
 namespace Presentation.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class AuthController : ControllerBase
+public class AuthController : ApiBaseController
 {
     private readonly MonqizDbContext _context;
     private readonly IPasswordService _passwordService;

@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using ServicesAbstraction.Interfaces;
-using Shared.Dtos.Hospital;
-using Shared.Dtos.Result;
+﻿using Shared.Dtos.Hospital;
 
 namespace Presentation.Controllers
 {
