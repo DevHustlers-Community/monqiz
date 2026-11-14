@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Persistence.Data;
 using Persistence.Repositories;
+using Presentation.RealTime;
 using Services.Implementation;
 using ServicesAbstraction.Interfaces;
 using Shared.Dtos.Result;
@@ -43,6 +44,10 @@ namespace Monqiz.Api
             // JWT Token Service
             Services.AddScoped<ITokenService, TokenService>();
             Services.AddScoped<IOtpService, OtpService>();
+
+            // SignelR
+            Services.AddSignalR();
+            Services.AddScoped<INotificationPublisher, NotificationsPublisher>();
         }
 
         private static void AddDataService(this IServiceCollection Services, IConfiguration Configuration)
@@ -102,6 +107,20 @@ namespace Monqiz.Api
                             Encoding.UTF8.GetBytes(secretKey)),
 
                         ClockSkew = TimeSpan.Zero
+                    };
+                    // More configuration to SignelR
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+
+                            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                                context.Token = accessToken;
+
+                            return Task.CompletedTask;
+                        }
                     };
                 });
         }

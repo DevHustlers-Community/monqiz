@@ -3,7 +3,7 @@
 namespace Services.Implementation
 {
     public class NotificationService(IDonorMatchingService _donorMatching, IUnitOfWork _unitOfWork,
-        INotificationRepo _notificationRepo) : INotificationService
+        INotificationRepo _notificationRepo, INotificationPublisher _notificationPublisher) : INotificationService
     {
         public async Task CreateNotificationToBloodDonationRequest(Guid requestId)
         {
@@ -17,17 +17,29 @@ namespace Services.Implementation
             {
                 listOfNotifications.Add(new Notifications()
                 {
-                    Title = $"Blood Donation Request - {request.BloodType.ToString()}"
-                    ,
+                    Title = $"Blood Donation Request - {request.BloodType.ToString()}",
                     Message = $"A patient needs {request.UnitsNeeded} unit(s) of {request.BloodType.ToString()} blood.\n" +
                     $" Hospital: {request.Hospital.Name}\n Location: {request.Hospital.Address.Governorate}/{request.Hospital.Address.City}\n" +
                     $" Location Url: {request.Hospital.LocationUrl}\n Required Before: {request.RequiredDate}\n\n" +
                     $" Your blood type is compatible with this request.\n Please check the request details if you are available to donate.",
                     RequestId = request.Id,
-                    UserId = user
+                    UserId = user,
+                    CreateAt = DateTime.UtcNow,
                 });
             }
             await _unitOfWork.GetGenericRepo<Notifications>().AddRangeAsync(listOfNotifications);
+            await _unitOfWork.SaveChanagesAsync();
+
+            foreach (var notification in listOfNotifications)
+            {
+                await _notificationPublisher.PublishAsync(notification.UserId, new NotificationsDto()
+                {
+                    CreateAt = notification.CreateAt,
+                    Message = notification.Message,
+                    Title = notification.Title,
+                    Id = notification.Id,
+                });
+            }
         }
 
         public async Task<ApiResponse<bool>> DeleteNotification(Guid userId, Guid notificationId)

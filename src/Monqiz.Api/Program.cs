@@ -1,6 +1,7 @@
 using Domain.Interfaces;
 using FluentValidation;
 using Persistence;
+using Presentation.Hubs;
 using Scalar.AspNetCore;
 using Shared.Validators.Auth;
 
@@ -45,6 +46,7 @@ public class Program
         app.UseAuthorization();
 
         app.MapControllers();
+        app.MapHub<NotificationHub>("/hubs/notifications");
 
         #endregion Middlewares
 
