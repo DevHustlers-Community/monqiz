@@ -119,6 +119,10 @@ namespace Services.Implementation
 
         public async Task<ApiResponse<int>> UpdateRequestAsync(Guid id, Guid userId, RequestCreateOrUpdateDto request)
         {
+            if (request.BloodType == BloodType.Unknown)
+                throw new BadRequestException("Can not update blood type to Unknown.");
+            if (request.RequiredDate.HasValue && request.RequiredDate.Value <= DateTime.UtcNow)
+                throw new BadRequestException("Can not set required date with old date.");
             var specification = new RequestSpecification(id, true);
             var originRequest = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(specification) ??
                 throw new NotFoundException("Not Found Requst with this id.");
@@ -169,9 +173,6 @@ namespace Services.Implementation
                     throw new ConflictException($"The earliest date you can donate is {LastDonationDate}.");
             }
 
-            if (request.UnitsNeeded == 1) request.Status = RequestStatus.Fulfilled;
-            request.UnitsNeeded--;
-            user.LastDonationDate = DateOnly.FromDateTime(DateTime.UtcNow);
             var requestAcceptence = new RequestAcceptance()
             {
                 RequestId = requestId,
@@ -189,7 +190,8 @@ namespace Services.Implementation
 
             var request = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(requestId) ??
                 throw new NotFoundException("Not found request with this id.");
-
+            if (request.Status == status)
+                throw new BadRequestException("You cannot change an request's status to the same status.");
             request.Status = status;
             _unitOfWork.GetGenericRepo<Request>().Update(request);
 

@@ -14,7 +14,7 @@ namespace Presentation.Controllers
         public async Task<ActionResult<PagenatedResult<NotificationsDto>>> GetAll(int? pageIndex)
             => Ok(await _notification.GetAllNotifications(GetCurrentUserId()!.Value, pageIndex));
 
-        [HttpPatch("{id}/read")]
+        [HttpPatch("{id:guid}/read")]
         [Authorize]
         public async Task<ActionResult<ApiResponse<bool>>> ReadNotification(Guid id)
            => Ok(await _notification.ReadNotification(GetCurrentUserId()!.Value, id));
@@ -24,7 +24,7 @@ namespace Presentation.Controllers
         public async Task<ActionResult<ApiResponse<bool>>> ReadAllNotifications()
            => Ok(await _notification.ReadAllNotifications(GetCurrentUserId()!.Value));
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         [Authorize]
         public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id)
             => Ok(await _notification.DeleteNotification(GetCurrentUserId()!.Value, id));

@@ -61,8 +61,8 @@ namespace Services.Implementation
         {
             var specification = new HospitalSpecification(id);
             var hospital = await _unitOfWork.GetGenericRepo<Hospital>().GetByIdAsync(specification);
-            if (hospital is null) throw new NotFoundException("Not Found Hospital with this id.");
-            if (hospital.IsDeleted) return ApiResponse<HospitalDto>.Failure("The hospital was previously deleted.");
+            if (hospital is null || hospital.IsDeleted)
+                throw new NotFoundException("Not Found Hospital with this id.");
             return ApiResponse<HospitalDto>.Success(FactoryHospitals.ToHospitalDto(hospital),
                 "The hospital has been successfull deleted.");
         }

@@ -9,7 +9,7 @@ namespace Services.Implementation
         {
             var specification = new RequestSpecification(requestId);
             var request = await _unitOfWork.GetGenericRepo<Request>().GetByIdAsync(specification) ??
-                throw new ForbiddenException("can not be request null");
+                throw new ConflictException("can not be request null");
 
             var users = await _donorMatching.FindMatchingDonorsAsync(request.Hospital.Address.Id, request.CreatorUserId, request.BloodType);
             List<Notifications> listOfNotifications = new List<Notifications>();
@@ -28,7 +28,6 @@ namespace Services.Implementation
                 });
             }
             await _unitOfWork.GetGenericRepo<Notifications>().AddRangeAsync(listOfNotifications);
-            await _unitOfWork.SaveChanagesAsync();
         }
 
         public async Task<ApiResponse<bool>> DeleteNotification(Guid userId, Guid notificationId)

@@ -18,9 +18,9 @@
             {
                 var ordered = input.OrderBy(specification.OrderedByExpression);
                 if (specification.ThenByAscExpression is not null)
-                    ordered.ThenBy(specification.ThenByAscExpression);
+                    ordered = ordered.ThenBy(specification.ThenByAscExpression);
                 else if (specification.ThenByDescExpression is not null)
-                    ordered.ThenByDescending(specification.ThenByDescExpression);
+                    ordered = ordered.ThenByDescending(specification.ThenByDescExpression);
 
                 input = ordered;
             }
@@ -28,9 +28,9 @@
             {
                 var ordered = input.OrderByDescending(specification.OrderedByDescExpression);
                 if (specification.ThenByAscExpression is not null)
-                    ordered.ThenBy(specification.ThenByAscExpression);
+                    ordered = ordered.ThenBy(specification.ThenByAscExpression);
                 else if (specification.ThenByDescExpression is not null)
-                    ordered.ThenByDescending(specification.ThenByDescExpression);
+                    ordered = ordered.ThenByDescending(specification.ThenByDescExpression);
 
                 input = ordered;
             }
