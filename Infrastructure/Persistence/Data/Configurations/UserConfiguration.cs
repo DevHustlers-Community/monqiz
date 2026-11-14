@@ -22,15 +22,15 @@
             // Enum properties
             builder.Property(e => e.Gender)
                 .HasConversion<string>()
-                .IsRequired();
+                .IsRequired().HasMaxLength(10);
 
             builder.Property(e => e.BloodType)
                 .HasConversion<string>()
-                .IsRequired();
+                .IsRequired().HasMaxLength(20);
 
             builder.Property(e => e.Status)
                 .HasConversion<string>()
-                .IsRequired();
+                .IsRequired().HasMaxLength(20);
 
             // Other required properties
             builder.Property(e => e.BirthDate)
