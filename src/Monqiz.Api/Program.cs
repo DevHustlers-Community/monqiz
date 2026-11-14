@@ -35,7 +35,6 @@ public class Program
                 builder.Configuration.GetConnectionString("DefaultConnection"));
         });
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-        builder.Services.AddScoped<IManagerService, ManagerService>();
         builder.Services.AddScoped<IAddressRepo, AddressRepo>();
         builder.Services.AddScoped<IHospitalService, HospitalService>();
         builder.Services.AddScoped<IAddressService, AddressService>();
