@@ -13,7 +13,7 @@ namespace Presentation.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HospitalDto>>> GetAll(string? governorate, string? city, int? pageIndex)
+        public async Task<ActionResult<PagenatedResult<HospitalDto>>> GetAll(string? governorate, string? city, int? pageIndex)
             => Ok(await _hospitalService.GetAllAsync(governorate, city, pageIndex));
 
         [Authorize]

@@ -67,7 +67,7 @@ namespace Services.Implementation
                 throw new ConflictException("Can not delete Request without status pending.");
         }
 
-        public async Task<PagenatedResult<RequestDetailsDto>> GetAllAsync(string? bloodType, int? pageIndex)
+        public async Task<ApiResponse<PagenatedResult<RequestDetailsDto>>> GetAllAsync(string? bloodType, int? pageIndex)
         {
             if (!Enum.TryParse(bloodType, out BloodType blood) && !string.IsNullOrEmpty(bloodType))
                 throw new BadRequestException("Invalid blood type.");
@@ -81,10 +81,9 @@ namespace Services.Implementation
             var totalSpecification = new RequestSpecification(blood);
             var totalCount = await _unitOfWork.GetGenericRepo<Request>().GetCountAsync(totalSpecification);
 
-            return new PagenatedResult<RequestDetailsDto>(pageIndex.Value, result.Count(), totalCount)
-            {
-                Dates = result,
-            };
+            var pagenation = new PagenatedResult<RequestDetailsDto>(pageIndex.Value, result.Count(), totalCount, result);
+            return ApiResponse<PagenatedResult<RequestDetailsDto>>.Success(pagenation,
+                "Requests have been successfully retrieved.");
         }
 
         public async Task<ApiResponse<RequestDetailsDto>> GetByIdAsync(Guid id)
@@ -97,24 +96,37 @@ namespace Services.Implementation
                 "The request has been successfull retrieved.");
         }
 
-        public async Task<ApiResponse<IEnumerable<RequestDetailsDto>>> GetMyDonationsAsync(Guid userId)
+        public async Task<ApiResponse<PagenatedResult<RequestDetailsDto>>> GetMyDonationsAsync(Guid userId, int? pageIndex)
         {
-            var specification = new RequestWithAcceptedRequestSpecification(userId);
+            if (!pageIndex.HasValue || pageIndex.Value <= 0) pageIndex = 1;
+            var specification = new RequestWithAcceptedRequestSpecification(userId, pageIndex.Value);
             var requestacceptance = await _unitOfWork.GetGenericRepo<RequestAcceptance>().GetAllAsync(specification) ??
                 throw new NotFoundException("Not Found accepted request with this user.");
 
+            var totalSpecification = new RequestWithAcceptedRequestSpecification(userId);
+            var totalCount = await _unitOfWork.GetGenericRepo<RequestAcceptance>().GetCountAsync(totalSpecification);
+
             var list = requestacceptance.Select(e => FactoryRequest.ToRequestDto(e.Request)).ToArray();
-            return ApiResponse<IEnumerable<RequestDetailsDto>>.Success(list,
-                "All your Donations have been successfully retrieved.");
+
+            var pagenation = new PagenatedResult<RequestDetailsDto>(pageIndex.Value, list.Length, totalCount, list);
+            return ApiResponse<PagenatedResult<RequestDetailsDto>>.Success(pagenation,
+                "Your donations have been successfully retrieved.");
         }
 
-        public async Task<ApiResponse<IEnumerable<RequestDetailsDto>>> GetMyRequestAsync(Guid userId)
+        public async Task<ApiResponse<PagenatedResult<RequestDetailsDto>>> GetMyRequestAsync(Guid userId, int? pageIndex)
         {
-            var specification = new RequestsByCreatorSpecification(userId);
+            if (!pageIndex.HasValue || pageIndex <= 0) pageIndex = 1;
+            var specification = new RequestsByCreatorSpecification(userId, pageIndex.Value);
             var requests = await _unitOfWork.GetGenericRepo<Request>().GetAllAsync(specification);
+
+            var totalSpecification = new RequestsByCreatorSpecification(userId);
+            var totalCount = await _unitOfWork.GetGenericRepo<Request>().GetCountAsync(totalSpecification);
+
             var result = requests.Select(FactoryRequest.ToRequestDto).ToArray();
-            return ApiResponse<IEnumerable<RequestDetailsDto>>.Success(result,
-                "All your requests have been successfully retrieved.");
+            var pagenation = new PagenatedResult<RequestDetailsDto>(pageIndex.Value, result.Length, totalCount, result);
+
+            return ApiResponse<PagenatedResult<RequestDetailsDto>>.Success(pagenation,
+                "Your requests have been successfully retrieved.");
         }
 
         public async Task<ApiResponse<int>> UpdateRequestAsync(Guid id, Guid userId, RequestCreateOrUpdateDto request)

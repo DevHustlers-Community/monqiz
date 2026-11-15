@@ -20,8 +20,8 @@ namespace Presentation.Controllers
 
         [HttpGet("created")]
         [Authorize]
-        public async Task<ActionResult<ApiResponse<IEnumerable<RequestDetailsDto>>>> GetallMyRequests()
-        => Ok(await _requestService.GetMyRequestAsync(GetCurrentUserId()!.Value));
+        public async Task<ActionResult<ApiResponse<PagenatedResult<RequestDetailsDto>>>> GetallMyRequests(int? pageIndex)
+        => Ok(await _requestService.GetMyRequestAsync(GetCurrentUserId()!.Value, pageIndex));
 
         [HttpPost("{id:guid}/accept")]
         [Authorize]
@@ -35,7 +35,7 @@ namespace Presentation.Controllers
 
         [HttpGet("my-donations")]
         [Authorize]
-        public async Task<ActionResult<ApiResponse<IEnumerable<RequestDetailsDto>>>> MyDonations()
-            => Ok(await _requestService.GetMyDonationsAsync(GetCurrentUserId()!.Value));
+        public async Task<ActionResult<ApiResponse<PagenatedResult<RequestDetailsDto>>>> MyDonations(int? pageIndex)
+            => Ok(await _requestService.GetMyDonationsAsync(GetCurrentUserId()!.Value, pageIndex));
     }
 }

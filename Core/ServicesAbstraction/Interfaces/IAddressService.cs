@@ -5,10 +5,10 @@ namespace ServicesAbstraction.Interfaces
 {
     public interface IAddressService
     {
-        Task<ApiResponse<IEnumerable<string>>> GetAllGovernoratesAsync();
+        Task<ApiResponse<PagenatedResult<string>>> GetAllGovernoratesAsync(int? pageIndex);
 
-        Task<ApiResponse<IEnumerable<string>>> GetAllcitiesByGovernorateAsync(string? Governorate);
+        Task<ApiResponse<PagenatedResult<string>>> GetAllcitiesByGovernorateAsync(string? Governorate, int? pageIndex);
 
-        Task<ApiResponse<IEnumerable<AddressDto>>> GetAllAddressesAsync(string? governorate, string? city);
+        Task<ApiResponse<PagenatedResult<AddressDto>>> GetAllAddressesAsync(string? governorate, string? city, int? pageIndex);
     }
 }

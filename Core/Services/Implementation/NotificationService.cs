@@ -54,7 +54,7 @@ namespace Services.Implementation
             return ApiResponse<bool>.Success(true, "This notification has been successfully deleted.");
         }
 
-        public async Task<PagenatedResult<NotificationsDto>> GetAllNotifications(Guid userId, int? pageIndex)
+        public async Task<ApiResponse<PagenatedResult<NotificationsDto>>> GetAllNotifications(Guid userId, int? pageIndex)
         {
             if (!pageIndex.HasValue || pageIndex < 0) pageIndex = 1;
             var specification = new NotificationsByUserSpecification(userId, pageIndex.Value, true);
@@ -71,13 +71,12 @@ namespace Services.Implementation
                 Message = e.Message,
                 Title = e.Title
             });
-            return new PagenatedResult<NotificationsDto>(pageIndex.Value, result.Count(), totalConut)
-            {
-                Dates = result
-            };
+            var pagenation = new PagenatedResult<NotificationsDto>(pageIndex.Value, result.Count(), totalConut, result);
+            return ApiResponse<PagenatedResult<NotificationsDto>>.Success(pagenation,
+                "Notifications have been successfully retrieved.");
         }
 
-        public async Task<PagenatedResult<NotificationsDto>> GetUnreadNotifications(Guid userId, int? pageIndex)
+        public async Task<ApiResponse<PagenatedResult<NotificationsDto>>> GetUnreadNotifications(Guid userId, int? pageIndex)
         {
             if (!pageIndex.HasValue || pageIndex < 0) pageIndex = 1;
             var specification = new NotificationsByUserSpecification(userId, pageIndex.Value, false);
@@ -94,10 +93,9 @@ namespace Services.Implementation
                 Message = e.Message,
                 Title = e.Title
             });
-            return new PagenatedResult<NotificationsDto>(pageIndex.Value, result.Count(), totalConut)
-            {
-                Dates = result
-            };
+            var pagenation = new PagenatedResult<NotificationsDto>(pageIndex.Value, result.Count(), totalConut, result);
+            return ApiResponse<PagenatedResult<NotificationsDto>>.Success(pagenation,
+                "Notifications have been successfully retrieved.");
         }
 
         public async Task<ApiResponse<bool>> ReadAllNotifications(Guid userId)

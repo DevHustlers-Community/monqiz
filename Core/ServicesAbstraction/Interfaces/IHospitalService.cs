@@ -5,7 +5,7 @@ namespace ServicesAbstraction.Interfaces
 {
     public interface IHospitalService
     {
-        Task<PagenatedResult<HospitalDto>> GetAllAsync(string? governorate, string? city, int? pageIndex);
+        Task<ApiResponse<PagenatedResult<HospitalDto>>> GetAllAsync(string? governorate, string? city, int? pageIndex);
 
         Task<ApiResponse<HospitalDto>> GetById(Guid id);
 

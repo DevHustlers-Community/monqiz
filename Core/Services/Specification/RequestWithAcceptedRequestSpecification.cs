@@ -11,5 +11,10 @@ namespace Services.Specification
             AddIncluding(e => e.Request.Hospital);
             AddIncluding(e => e.Request.Hospital.Address);
         }
+
+        public RequestWithAcceptedRequestSpecification(Guid userId, int pageIndex) : this(userId)
+        {
+            ApplyPagenation(pageIndex);
+        }
     }
 }

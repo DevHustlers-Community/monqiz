@@ -7,9 +7,9 @@ namespace ServicesAbstraction.Interfaces
     {
         Task CreateNotificationToBloodDonationRequest(Guid requestId);
 
-        Task<PagenatedResult<NotificationsDto>> GetAllNotifications(Guid userId, int? pageindex);
+        Task<ApiResponse<PagenatedResult<NotificationsDto>>> GetAllNotifications(Guid userId, int? pageindex);
 
-        Task<PagenatedResult<NotificationsDto>> GetUnreadNotifications(Guid userId, int? pageindex);
+        Task<ApiResponse<PagenatedResult<NotificationsDto>>> GetUnreadNotifications(Guid userId, int? pageindex);
 
         Task<ApiResponse<bool>> ReadNotification(Guid userId, Guid notificationId);
 

@@ -12,13 +12,13 @@ namespace ServicesAbstraction.Interfaces
 
         Task<ApiResponse<int>> UpdateRequestAsync(Guid id, Guid userId, RequestCreateOrUpdateDto requeest);
 
-        Task<PagenatedResult<RequestDetailsDto>> GetAllAsync(string? bloodType, int? pageIndex);
+        Task<ApiResponse<PagenatedResult<RequestDetailsDto>>> GetAllAsync(string? bloodType, int? pageIndex);
 
         Task<ApiResponse<RequestDetailsDto>> GetByIdAsync(Guid id);
 
-        Task<ApiResponse<IEnumerable<RequestDetailsDto>>> GetMyDonationsAsync(Guid userId);
+        Task<ApiResponse<PagenatedResult<RequestDetailsDto>>> GetMyDonationsAsync(Guid userId, int? pageIndex);
 
-        Task<ApiResponse<IEnumerable<RequestDetailsDto>>> GetMyRequestAsync(Guid userId);
+        Task<ApiResponse<PagenatedResult<RequestDetailsDto>>> GetMyRequestAsync(Guid userId, int? pageIndex);
 
         Task<ApiResponse<int>> AcceptRequest(Guid requestId, Guid userId);
 
