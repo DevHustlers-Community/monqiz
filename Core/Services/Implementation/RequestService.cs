@@ -25,6 +25,9 @@ namespace Services.Implementation
             originRequest.CreatorUserId = userId;
             originRequest.HospitalId = hospital.Id;
             originRequest.Hospital = hospital;
+            originRequest.Status = RequestStatus.Approved;
+
+            await _notification.CreateNotificationToBloodDonationRequest(originRequest.Id);
 
             await _unitOfWork.GetGenericRepo<Request>().AddAsync(originRequest);
             await _unitOfWork.SaveChanagesAsync();
@@ -206,9 +209,6 @@ namespace Services.Implementation
                 throw new BadRequestException("You cannot change an request's status to the same status.");
             request.Status = status;
             _unitOfWork.GetGenericRepo<Request>().Update(request);
-
-            if (status == RequestStatus.Approved)
-                await _notification.CreateNotificationToBloodDonationRequest(request.Id);
 
             return ApiResponse<int>.Success(await _unitOfWork.SaveChanagesAsync(),
                 $"The request status has been changed to {status.ToString()}.");
