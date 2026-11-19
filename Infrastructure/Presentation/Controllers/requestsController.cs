@@ -37,9 +37,6 @@ namespace Presentation.Controllers
         [Authorize]
         public async Task<ActionResult<ApiResponse<PagenatedResult<RequestDetailsDto>>>> MyDonations(int? pageIndex)
             => Ok(await _requestService.GetMyDonationsAsync(GetCurrentUserId()!.Value, pageIndex));
-        public async Task<ActionResult<ApiResponse<IEnumerable<RequestDetailsDto>>>> MyDonations()
-            => Ok(await _requestService.GetMyDonationsAsync(GetCurrentUserId()!.Value));
-
         
         [Authorize]
         [HttpGet("{id:guid}/acceptances")]
