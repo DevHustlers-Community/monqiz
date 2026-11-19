@@ -26,12 +26,16 @@ namespace Domain.Interfaces.Specification
 
         public Expression<Func<TEntity, object>> OrderedByExpression { get; private set; }
         public Expression<Func<TEntity, object>> OrderedByDescExpression { get; private set; }
+        public Expression<Func<TEntity, object>>? ThenByDescExpression { get; private set; }
+        public Expression<Func<TEntity, object>>? ThenByAscExpression { get; private set; }
 
-        public void AddOrder(Expression<Func<TEntity, object>> expression)
-            => OrderedByExpression = expression;
+        public void AddOrder(Expression<Func<TEntity, object>> expression) => OrderedByExpression = expression;
 
-        public void AddOrderDesc(Expression<Func<TEntity, object>> expression)
-            => OrderedByDescExpression = expression;
+        public void AddOrderDesc(Expression<Func<TEntity, object>> expression) => OrderedByDescExpression = expression;
+
+        public void AddThenByDesc(Expression<Func<TEntity, object>> expression) => ThenByDescExpression = expression;
+
+        public void AddThenByAsc(Expression<Func<TEntity, object>> expression) => ThenByAscExpression = expression;
 
         #endregion Sorted
 

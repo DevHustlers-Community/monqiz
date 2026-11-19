@@ -11,5 +11,10 @@ namespace Services.Specification
             AddIncluding(r => r.Hospital.Address);
             AddOrderDesc(r => r.CreatedAt);
         }
+
+        public RequestsByCreatorSpecification(Guid userId, int pageIndex) : this(userId)
+        {
+            ApplyPagenation(pageIndex);
+        }
     }
 }

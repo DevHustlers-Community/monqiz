@@ -14,5 +14,11 @@ namespace Services.Specification
             (string.IsNullOrEmpty(city) || e.City == city))
         {
         }
+
+        public AddressSpecification(string? Governorate, string? city, int pageIndex) :
+            this(Governorate, city)
+        {
+            ApplyPagenation(pageIndex);
+        }
     }
 }

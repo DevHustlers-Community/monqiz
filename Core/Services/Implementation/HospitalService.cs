@@ -40,7 +40,7 @@ namespace Services.Implementation
             return ApiResponse<int>.Success(await _unitOfWork.SaveChanagesAsync(), "The hospital has been successfully deleted.");
         }
 
-        public async Task<PagenatedResult<HospitalDto>> GetAllAsync(string? governorate, string? city, int? pageIndex)
+        public async Task<ApiResponse<PagenatedResult<HospitalDto>>> GetAllAsync(string? governorate, string? city, int? pageIndex)
         {
             var specificationCount = new HospitalSpecification(governorate, city);
             var totalCount = await _unitOfWork.GetGenericRepo<Hospital>().GetCountAsync(specificationCount);
@@ -50,19 +50,17 @@ namespace Services.Implementation
             var result = await _unitOfWork.GetGenericRepo<Hospital>().GetAllAsync(specification);
             var hospitals = result.Select(FactoryHospitals.ToHospitalDto).ToArray();
 
-            return new PagenatedResult<HospitalDto>(pageIndex.Value, hospitals.Length,
-                totalCount)
-            {
-                Dates = hospitals,
-            };
+            var pagenation = new PagenatedResult<HospitalDto>(pageIndex.Value, hospitals.Length, totalCount, hospitals);
+            return ApiResponse<PagenatedResult<HospitalDto>>.Success(pagenation,
+                "Hospitals have been successfully retrieved.");
         }
 
         public async Task<ApiResponse<HospitalDto>> GetById(Guid id)
         {
             var specification = new HospitalSpecification(id);
             var hospital = await _unitOfWork.GetGenericRepo<Hospital>().GetByIdAsync(specification);
-            if (hospital is null) throw new NotFoundException("Not Found Hospital with this id.");
-            if (hospital.IsDeleted) return ApiResponse<HospitalDto>.Failure("The hospital was previously deleted.");
+            if (hospital is null || hospital.IsDeleted)
+                throw new NotFoundException("Not Found Hospital with this id.");
             return ApiResponse<HospitalDto>.Success(FactoryHospitals.ToHospitalDto(hospital),
                 "The hospital has been successfull deleted.");
         }

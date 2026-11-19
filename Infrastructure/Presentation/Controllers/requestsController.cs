@@ -1,24 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using ServicesAbstraction.Interfaces;
-using Shared.Dtos.Request;
-using Shared.Dtos.Result;
-using Shared.Enums;
-using System.Security.Claims;
+﻿using Shared.Dtos.Request;
 
 namespace Presentation.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class requestsController(IRequestService _requestService) : ControllerBase
+    public class requestsController(IRequestService _requestService) : ApiBaseController
     {
-        private Guid? GetCurrentUserId()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            return Guid.TryParse(userId, out var id) ? id : null;
-        }
-
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<ApiResponse<RequestDetailsDto>>> Create(RequestCreateOrUpdateDto request)
@@ -31,12 +16,12 @@ namespace Presentation.Controllers
         [Authorize]
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<ApiResponse<RequestDetailsDto>>> GetById(Guid id)
-         => Ok(await _requestService.GetByIdAsync(id, GetCurrentUserId()!.Value));
+         => Ok(await _requestService.GetByIdAsync(id));
 
         [HttpGet("created")]
         [Authorize]
-        public async Task<ActionResult<ApiResponse<IEnumerable<RequestDetailsDto>>>> GetallMyRequests()
-        => Ok(await _requestService.GetMyRequestAsync(GetCurrentUserId()!.Value));
+        public async Task<ActionResult<ApiResponse<PagenatedResult<RequestDetailsDto>>>> GetallMyRequests(int? pageIndex)
+        => Ok(await _requestService.GetMyRequestAsync(GetCurrentUserId()!.Value, pageIndex));
 
         [HttpPost("{id:guid}/accept")]
         [Authorize]
@@ -50,6 +35,8 @@ namespace Presentation.Controllers
 
         [HttpGet("my-donations")]
         [Authorize]
+        public async Task<ActionResult<ApiResponse<PagenatedResult<RequestDetailsDto>>>> MyDonations(int? pageIndex)
+            => Ok(await _requestService.GetMyDonationsAsync(GetCurrentUserId()!.Value, pageIndex));
         public async Task<ActionResult<ApiResponse<IEnumerable<RequestDetailsDto>>>> MyDonations()
             => Ok(await _requestService.GetMyDonationsAsync(GetCurrentUserId()!.Value));
 

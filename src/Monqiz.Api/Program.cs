@@ -1,18 +1,9 @@
 using Domain.Interfaces;
-using Domain.Models;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Persistence;
-using Persistence.Data;
-using Persistence.Repositories;
+using Presentation.Hubs;
 using Scalar.AspNetCore;
-using Services.Implementation;
-using ServicesAbstraction.Interfaces;
 using Shared.Validators.Auth;
-using System.Text;
 
 namespace Monqiz.Api;
 
@@ -24,6 +15,7 @@ public class Program
 
         #region Add services to the container
 
+        builder.Services.AddMyServices(builder.Configuration);
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
 
@@ -87,7 +79,6 @@ public class Program
                 };
             });
         builder.Services.AddMemoryCache();
-        builder.Services.AddScoped<IOtpService, OtpService>();
 
         builder.Services.AddAuthorization();
         builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
@@ -114,6 +105,7 @@ public class Program
         app.UseAuthorization();
 
         app.MapControllers();
+        app.MapHub<NotificationHub>("/hubs/notifications");
 
         #endregion Middlewares
 

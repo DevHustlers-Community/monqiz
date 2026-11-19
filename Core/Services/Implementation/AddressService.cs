@@ -4,24 +4,40 @@ namespace Services.Implementation
 {
     public class AddressService(IUnitOfWork _unitOfWork, IAddressRepo _addressRepo) : IAddressService
     {
-        public async Task<ApiResponse<IEnumerable<AddressDto>>> GetAllAddressesAsync(string? governorate, string? city)
+        public async Task<ApiResponse<PagenatedResult<AddressDto>>> GetAllAddressesAsync(string? governorate, string? city, int? pageIndex)
         {
-            var specification = new AddressSpecification(governorate, city);
+            if (!pageIndex.HasValue || pageIndex.Value <= 0) pageIndex = 1;
+            var specification = new AddressSpecification(governorate, city, pageIndex.Value);
             var address = await _unitOfWork.GetGenericRepo<Address>().GetAllAsync(specification);
+
+            var totalSpecification = new AddressSpecification(governorate, city);
+            var totalCount = await _unitOfWork.GetGenericRepo<Address>().GetCountAsync(totalSpecification);
             var result = address.Select(FactoryAddresses.ToAddressDto);
-            return ApiResponse<IEnumerable<AddressDto>>.Success(result, "Retrived all address");
+            var pagenation = new PagenatedResult<AddressDto>(pageIndex.Value, result.Count(), totalCount, result);
+
+            return ApiResponse<PagenatedResult<AddressDto>>.Success(pagenation,
+                "Address have been Successfully retrived.");
         }
 
-        public async Task<ApiResponse<IEnumerable<string>>> GetAllcitiesByGovernorateAsync(string? governorate)
+        public async Task<ApiResponse<PagenatedResult<string>>> GetAllcitiesByGovernorateAsync(string? governorate, int? pageIndex)
         {
-            var result = await _addressRepo.GetCitiesAsync(governorate);
-            return ApiResponse<IEnumerable<string>>.Success(result, "Retrived all cities");
+            if (!pageIndex.HasValue || pageIndex.Value <= 0) pageIndex = 1;
+
+            var result = await _addressRepo.GetCitiesAsync(governorate, pageIndex.Value);
+            var totalCount = await _addressRepo.GetCitiesAsync(governorate);
+            var pagenation = new PagenatedResult<string>(pageIndex.Value, result.Count(), totalCount, result);
+            return ApiResponse<PagenatedResult<string>>.Success(pagenation,
+                "Cities have been successfully retrived.");
         }
 
-        public async Task<ApiResponse<IEnumerable<string>>> GetAllGovernoratesAsync()
+        public async Task<ApiResponse<PagenatedResult<string>>> GetAllGovernoratesAsync(int? pageIndex)
         {
-            var result = await _addressRepo.GetGovernoratesAsync();
-            return ApiResponse<IEnumerable<string>>.Success(result, "Retrived all governorates");
+            if (!pageIndex.HasValue || pageIndex.Value <= 0) pageIndex = 1;
+            var result = await _addressRepo.GetGovernoratesAsync(pageIndex.Value);
+            var totalCount = await _addressRepo.GetGovernoratesAsync();
+            var pagenation = new PagenatedResult<string>(pageIndex.Value, result.Count(), totalCount, result);
+            return ApiResponse<PagenatedResult<string>>.Success(pagenation,
+                "Governorates have been successfully retrived.");
         }
     }
 }
