@@ -133,7 +133,12 @@ class MockBloodRequestDataSource implements BloodRequestDataSource {
   ];
 
   @override
-  Future<List<BloodRequestModel>> getUrgentRequests({BloodType? bloodType, String? governorate}) async {
+  Future<List<BloodRequestModel>> getUrgentRequests({
+    BloodType? bloodType,
+    String? governorate,
+    String? city,
+    int page = 1,
+  }) async {
     await Future.delayed(const Duration(milliseconds: AppConfig.mockLatencyMs));
 
     var results = List<BloodRequestModel>.from(_mockRequests);
@@ -144,6 +149,10 @@ class MockBloodRequestDataSource implements BloodRequestDataSource {
 
     if (governorate != null && governorate.isNotEmpty && governorate != 'الكل' && !governorate.contains('الكل')) {
       results = results.where((r) => r.hospital.address.governorate.contains(governorate) || governorate.contains(r.hospital.address.governorate)).toList();
+    }
+
+    if (city != null && city.isNotEmpty && city != 'الكل' && !city.contains('الكل')) {
+      results = results.where((r) => r.hospital.address.city.contains(city) || city.contains(r.hospital.address.city)).toList();
     }
 
     return results;

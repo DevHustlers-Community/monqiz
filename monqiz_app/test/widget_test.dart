@@ -12,15 +12,14 @@ void main() {
     await sl.reset();
   });
 
-  testWidgets('MonqizApp boots and renders navigation shell with all 5 tabs including Settings', (WidgetTester tester) async {
+  testWidgets('MonqizApp boots and renders navigation shell with all 4 tabs including Profile', (WidgetTester tester) async {
     await tester.pumpWidget(const MonqizApp());
     await tester.pumpAndSettle();
 
-    // Verify all 5 navigation tabs are rendered in bottom bar
-    expect(find.text('الحالات العاجلة'), findsWidgets);
+    // Verify the Week 2 4-tab navigation layout
+    expect(find.text('طلبات الدم'), findsWidgets);
+    expect(find.text('نشاطاتي'), findsWidgets);
     expect(find.text('المستشفيات'), findsWidgets);
-    expect(find.text('طلب دم'), findsWidgets);
-    expect(find.text('البطاقة الرقمية'), findsWidgets);
-    expect(find.text('الإعدادات'), findsWidgets);
+    expect(find.text('حسابي'), findsWidgets);
   });
 }

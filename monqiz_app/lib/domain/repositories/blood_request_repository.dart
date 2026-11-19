@@ -7,6 +7,8 @@ abstract class BloodRequestRepository {
   Future<Result<List<BloodRequestEntity>>> getUrgentRequests({
     BloodType? bloodType,
     String? governorate,
+    String? city,
+    int page = 1,
   });
   Future<Result<BloodRequestEntity>> getRequestById(String id);
   Future<Result<BloodRequestEntity>> createEmergencyRequest({

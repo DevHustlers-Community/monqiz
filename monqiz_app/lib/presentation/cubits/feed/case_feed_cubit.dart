@@ -14,7 +14,11 @@ class CaseFeedCubit extends Cubit<CaseFeedState> {
     required this.authRepository,
   }) : super(const CaseFeedInitial());
 
-  Future<void> loadFeed() async {
+  Future<void> loadFeed({
+    BloodType? bloodType,
+    String? governorate,
+    String? city,
+  }) async {
     emit(const CaseFeedLoading());
 
     // 1. Get current donor eligibility
@@ -29,15 +33,24 @@ class CaseFeedCubit extends Cubit<CaseFeedState> {
             recoveryProgress: 1.0,
           );
 
-    // 2. Fetch active requests
-    final result = await requestRepository.getUrgentRequests();
+    // 2. Fetch active requests (page 1)
+    final result = await requestRepository.getUrgentRequests(
+      bloodType: bloodType,
+      governorate: governorate != 'الكل' ? governorate : null,
+      city: city != 'الكل' ? city : null,
+      page: 1,
+    );
+
     result.when(
       onSuccess: (requests) {
         emit(CaseFeedLoaded(
           requests: requests,
-          activeBloodFilter: null,
-          activeGovernorate: 'الكل',
+          activeBloodFilter: bloodType,
+          activeGovernorate: governorate ?? 'الكل',
+          activeCity: city,
           eligibility: eligibility,
+          currentPage: 1,
+          hasMore: requests.length >= 10,
         ));
       },
       onFailure: (failure) {
@@ -46,21 +59,61 @@ class CaseFeedCubit extends Cubit<CaseFeedState> {
     );
   }
 
-  Future<void> filterByBloodType(BloodType? bloodType) async {
-    if (state is! CaseFeedLoaded) return;
-    final current = state as CaseFeedLoaded;
+  Future<void> loadMore() async {
+    final current = state;
+    if (current is! CaseFeedLoaded || current.isLoadingMore || !current.hasMore) return;
+
+    emit(current.copyWith(isLoadingMore: true));
+    final nextPage = current.currentPage + 1;
 
     final result = await requestRepository.getUrgentRequests(
-      bloodType: bloodType,
-      governorate: current.activeGovernorate,
+      bloodType: current.activeBloodFilter,
+      governorate: current.activeGovernorate != 'الكل' ? current.activeGovernorate : null,
+      city: current.activeCity != 'الكل' ? current.activeCity : null,
+      page: nextPage,
+    );
+
+    result.when(
+      onSuccess: (newRequests) {
+        if (newRequests.isEmpty) {
+          emit(current.copyWith(hasMore: false, isLoadingMore: false));
+        } else {
+          final updatedList = List.of(current.requests)..addAll(newRequests);
+          emit(current.copyWith(
+            requests: updatedList,
+            currentPage: nextPage,
+            hasMore: newRequests.length >= 10,
+            isLoadingMore: false,
+          ));
+        }
+      },
+      onFailure: (_) {
+        emit(current.copyWith(isLoadingMore: false));
+      },
+    );
+  }
+
+  Future<void> filterByBloodType(BloodType? bloodType) async {
+    final current = state;
+    if (current is! CaseFeedLoaded) return;
+
+    final effectiveBlood = current.activeBloodFilter == bloodType ? null : bloodType;
+
+    final result = await requestRepository.getUrgentRequests(
+      bloodType: effectiveBlood,
+      governorate: current.activeGovernorate != 'الكل' ? current.activeGovernorate : null,
+      city: current.activeCity != 'الكل' ? current.activeCity : null,
+      page: 1,
     );
 
     result.when(
       onSuccess: (requests) {
         emit(current.copyWith(
           requests: requests,
-          activeBloodFilter: bloodType,
-          clearBloodFilter: bloodType == null,
+          activeBloodFilter: effectiveBlood,
+          clearBloodFilter: effectiveBlood == null,
+          currentPage: 1,
+          hasMore: requests.length >= 10,
         ));
       },
       onFailure: (failure) {
@@ -69,13 +122,15 @@ class CaseFeedCubit extends Cubit<CaseFeedState> {
     );
   }
 
-  Future<void> filterByGovernorate(String? governorate) async {
-    if (state is! CaseFeedLoaded) return;
-    final current = state as CaseFeedLoaded;
+  Future<void> filterByLocation({String? governorate, String? city}) async {
+    final current = state;
+    if (current is! CaseFeedLoaded) return;
 
     final result = await requestRepository.getUrgentRequests(
       bloodType: current.activeBloodFilter,
-      governorate: governorate,
+      governorate: governorate != 'الكل' ? governorate : null,
+      city: city != 'الكل' ? city : null,
+      page: 1,
     );
 
     result.when(
@@ -83,6 +138,10 @@ class CaseFeedCubit extends Cubit<CaseFeedState> {
         emit(current.copyWith(
           requests: requests,
           activeGovernorate: governorate,
+          activeCity: city,
+          clearCity: city == null || city == 'الكل',
+          currentPage: 1,
+          hasMore: requests.length >= 10,
         ));
       },
       onFailure: (failure) {
