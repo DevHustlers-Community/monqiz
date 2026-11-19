@@ -15,11 +15,15 @@ class BloodRequestRepositoryImpl implements BloodRequestRepository {
   Future<Result<List<BloodRequestEntity>>> getUrgentRequests({
     BloodType? bloodType,
     String? governorate,
+    String? city,
+    int page = 1,
   }) async {
     try {
       final models = await _dataSource.getUrgentRequests(
         bloodType: bloodType,
         governorate: governorate,
+        city: city,
+        page: page,
       );
       return Result.success(models);
     } catch (e) {

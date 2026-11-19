@@ -9,9 +9,9 @@ class AddressModel extends AddressEntity {
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
     return AddressModel(
-      id: json['id'] as String? ?? json['address_Id'] as String? ?? '',
-      city: json['city'] as String? ?? '',
-      governorate: json['governorate'] as String? ?? '',
+      id: json['id']?.toString() ?? json['addressId']?.toString() ?? json['address_Id']?.toString() ?? '',
+      city: json['city']?.toString() ?? '',
+      governorate: json['governorate']?.toString() ?? '',
     );
   }
 

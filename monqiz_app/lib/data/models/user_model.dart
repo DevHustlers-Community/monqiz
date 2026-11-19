@@ -19,24 +19,42 @@ class UserModel extends UserEntity {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    final addressesJson = json['preferredAddresses'] as List<dynamic>? ?? [];
+    final addressesRaw = json['addresses'] ?? json['preferredAddresses'] ?? [];
+    final addressesList = addressesRaw is List ? addressesRaw : [];
+
+    DateTime parseDate(dynamic val, DateTime fallback) {
+      if (val == null) return fallback;
+      try {
+        return DateTime.parse(val.toString());
+      } catch (_) {
+        return fallback;
+      }
+    }
+
+    DateTime? parseNullableDate(dynamic val) {
+      if (val == null) return null;
+      try {
+        return DateTime.parse(val.toString());
+      } catch (_) {
+        return null;
+      }
+    }
+
     return UserModel(
-      id: json['id'] as String? ?? '',
-      firstName: json['firstName'] as String? ?? '',
-      lastName: json['lastName'] as String?,
-      email: json['email'] as String? ?? '',
-      phoneNumber: json['phoneNumber'] as String? ?? '',
-      pictureUrl: json['pictureUrl'] as String? ?? json['pictruUrl'] as String?,
-      birthDate: json['birthDate'] != null
-          ? DateTime.parse(json['birthDate'] as String)
-          : DateTime(1998, 1, 1),
-      lastDonationDate: json['lastDonationDate'] != null
-          ? DateTime.parse(json['lastDonationDate'] as String)
-          : null,
-      gender: Gender.fromString(json['gender']?.toString() ?? 'male'),
-      bloodType: BloodType.fromString(json['bloodType']?.toString() ?? 'O+'),
-      status: UserStatus.active,
-      preferredAddresses: addressesJson.map((a) => AddressModel.fromJson(a as Map<String, dynamic>)).toList(),
+      id: json['id']?.toString() ?? '',
+      firstName: json['firstName']?.toString() ?? '',
+      lastName: json['lastName']?.toString(),
+      email: json['email']?.toString() ?? '',
+      phoneNumber: json['phoneNumber']?.toString() ?? '',
+      pictureUrl: json['pictureUrl']?.toString() ?? json['pictruUrl']?.toString(),
+      birthDate: parseDate(json['birthDate'], DateTime(1998, 1, 1)),
+      lastDonationDate: parseNullableDate(json['lastDonationDate']),
+      gender: Gender.fromValue(json['gender']),
+      bloodType: BloodType.fromValue(json['bloodType']),
+      status: UserStatus.fromValue(json['status']),
+      preferredAddresses: addressesList
+          .map((a) => AddressModel.fromJson(a as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -51,5 +69,9 @@ class UserModel extends UserEntity {
         'lastDonationDate': lastDonationDate?.toIso8601String(),
         'gender': gender.name,
         'bloodType': bloodType.symbol,
+        'status': status.name,
+        'addresses': preferredAddresses
+            .map((a) => (a as AddressModel).toJson())
+            .toList(),
       };
 }
