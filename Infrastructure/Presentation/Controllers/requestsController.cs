@@ -52,5 +52,45 @@ namespace Presentation.Controllers
         [Authorize]
         public async Task<ActionResult<ApiResponse<IEnumerable<RequestDetailsDto>>>> MyDonations()
             => Ok(await _requestService.GetMyDonationsAsync(GetCurrentUserId()!.Value));
+
+        
+        [Authorize]
+        [HttpGet("{id:guid}/acceptances")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<RequestAcceptanceDto>>>>
+            GetRequestAcceptances(Guid id)
+        {
+            var userId = GetCurrentUserId();
+
+            if (userId is null)
+                return Unauthorized();
+
+            var result = await _requestService.GetRequestAcceptancesAsync(
+                id,
+                userId.Value,
+                User.IsInRole("Admin"));
+
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPatch("{requestId:guid}/acceptances/{acceptanceId:guid}/status")]
+        public async Task<ActionResult<ApiResponse<int>>> 
+            UpdateAcceptanceStatus(Guid requestId,Guid acceptanceId, 
+            UpdateAcceptanceStatusDto dto)
+        {
+            var userId = GetCurrentUserId();
+
+            if (userId is null)
+                return Unauthorized();
+
+            var result = await _requestService.UpdateAcceptanceStatusAsync(
+                requestId,
+                acceptanceId,
+                userId.Value,
+                User.IsInRole("Admin"),
+                dto.Status);
+
+            return Ok(result);
+        }
     }
 }
