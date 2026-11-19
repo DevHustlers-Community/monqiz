@@ -6,6 +6,8 @@ abstract class BloodRequestDataSource {
   Future<List<BloodRequestModel>> getUrgentRequests({
     BloodType? bloodType,
     String? governorate,
+    String? city,
+    int page = 1,
   });
   Future<BloodRequestModel> getRequestById(String id);
   Future<BloodRequestModel> createEmergencyRequest({

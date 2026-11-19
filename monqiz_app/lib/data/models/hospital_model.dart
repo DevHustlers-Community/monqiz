@@ -14,11 +14,11 @@ class HospitalModel extends HospitalEntity {
   factory HospitalModel.fromJson(Map<String, dynamic> json) {
     final addressJson = json['address'] as Map<String, dynamic>? ?? {};
     return HospitalModel(
-      id: json['id'] as String? ?? json['hospital_Id'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      phoneNumber: json['phoneNumber'] as String? ?? '',
-      locationUrl: json['locationUrl'] as String? ?? json['location(URL)'] as String? ?? '',
-      email: json['email'] as String? ?? '',
+      id: json['id']?.toString() ?? json['hospital_Id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      phoneNumber: json['phoneNumber']?.toString() ?? '',
+      locationUrl: json['locationUrl']?.toString() ?? json['location(URL)']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
       address: AddressModel.fromJson(addressJson),
     );
   }
@@ -29,6 +29,12 @@ class HospitalModel extends HospitalEntity {
         'phoneNumber': phoneNumber,
         'locationUrl': locationUrl,
         'email': email,
-        'address': (address as AddressModel).toJson(),
+        'address': address is AddressModel
+            ? (address as AddressModel).toJson()
+            : {
+                'id': address.id,
+                'city': address.city,
+                'governorate': address.governorate,
+              },
       };
 }

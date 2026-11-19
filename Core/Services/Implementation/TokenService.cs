@@ -3,6 +3,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Shared.Enums;
+using ServicesAbstraction.Interfaces;
 
 namespace Services.Implementation;
 
@@ -15,7 +17,11 @@ public class TokenService : ITokenService
         _configuration = configuration;
     }
 
-    public string GenerateToken(Guid userId, string email)
+    public string GenerateToken(
+        Guid userId,
+        string email,
+        IList<string> roles,
+        BloodType bloodType)
     {
         var jwtSettings = _configuration.GetSection("Jwt");
 
@@ -25,11 +31,17 @@ public class TokenService : ITokenService
         var credentials = new SigningCredentials(
             key, SecurityAlgorithms.HmacSha256);
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-            new Claim(ClaimTypes.Email, email)
+            new Claim("nameid", userId.ToString()),
+            new Claim("email", email),
+            new Claim("BloodType", bloodType.ToString())
         };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim("role", role));
+        }
 
         var token = new JwtSecurityToken(
             issuer: jwtSettings["Issuer"],

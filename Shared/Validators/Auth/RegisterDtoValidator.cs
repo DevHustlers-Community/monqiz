@@ -23,7 +23,7 @@ public class RegisterDtoValidator : AbstractValidator<RegisterDto>
 
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-            .Matches(@"^\+?[0-9]{10,15}$")
+            .Matches(@"^01[0125][0-9]{8}$")
             .WithMessage("Invalid phone number.");
 
         RuleFor(x => x.Password)
@@ -34,11 +34,17 @@ public class RegisterDtoValidator : AbstractValidator<RegisterDto>
             .Matches("[a-z]")
             .WithMessage("Password must contain at least one lowercase letter.")
             .Matches("[0-9]")
-            .WithMessage("Password must contain at least one digit.");
+            .WithMessage("Password must contain at least one digit.")
+            .Matches(@"[^a-zA-Z0-9]")
+            .WithMessage("Password must contain at least one special character.");
+
 
         RuleFor(x => x.BirthDate)
-            .LessThan(DateOnly.FromDateTime(DateTime.Today))
-            .WithMessage("Birth date must be in the past.");
+           .NotEqual(default(DateOnly))
+           .WithMessage("Birth date is required.")
+           .LessThan(DateOnly.FromDateTime(DateTime.Today))
+           .WithMessage("Birth date must be in the past.");
+
 
         RuleFor(x => x.Gender)
             .IsInEnum();

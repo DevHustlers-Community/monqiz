@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
-import '../create_request/create_request_wizard_screen.dart';
-import '../donor_card/donor_card_screen.dart';
+import '../activity/my_activity_screen.dart';
 import '../home/home_feed_screen.dart';
 import '../hospitals/hospitals_directory_screen.dart';
-import '../settings/settings_screen.dart';
+import '../profile/profile_screen.dart';
 
 class MainShellScreen extends StatefulWidget {
   final int initialIndex;
@@ -20,10 +19,9 @@ class _MainShellScreenState extends State<MainShellScreen> {
 
   final List<Widget> _pages = const [
     HomeFeedScreen(),
+    MyActivityScreen(),
     HospitalsDirectoryScreen(),
-    CreateRequestWizardScreen(),
-    DonorCardScreen(),
-    SettingsScreen(),
+    ProfileScreen(),
   ];
 
   @override
@@ -76,7 +74,12 @@ class _MainShellScreenState extends State<MainShellScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.water_drop_outlined),
               activeIcon: Icon(Icons.water_drop),
-              label: 'الحالات العاجلة',
+              label: 'طلبات الدم',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.history_outlined),
+              activeIcon: Icon(Icons.history),
+              label: 'نشاطاتي',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.local_hospital_outlined),
@@ -84,19 +87,9 @@ class _MainShellScreenState extends State<MainShellScreen> {
               label: 'المستشفيات',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle_outline),
-              activeIcon: Icon(Icons.add_circle),
-              label: 'طلب دم',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.badge_outlined),
-              activeIcon: Icon(Icons.badge),
-              label: 'البطاقة الرقمية',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings_outlined),
-              activeIcon: Icon(Icons.settings),
-              label: 'الإعدادات',
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: 'حسابي',
             ),
           ],
         ),

@@ -19,6 +19,65 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
 
+        builder.Services.AddDbContext<MonqizDbContext>(options =>
+        {
+            options.UseSqlServer(
+                builder.Configuration.GetConnectionString("DefaultConnection"));
+        });
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddScoped<IManagerService, ManagerService>();
+        builder.Services.AddScoped<IAddressRepo, AddressRepo>();
+        builder.Services.AddScoped<IHospitalService, HospitalService>();
+        builder.Services.AddScoped<IAddressService, AddressService>();
+        builder.Services.AddScoped<IDataSeeding, DataSeeding>();
+        builder.Services.AddScoped<IRequestService, RequestService>();
+        builder.Services.AddIdentity<User, IdentityRole<Guid>>(option =>
+        {
+            option.Password.RequireNonAlphanumeric = true;
+            option.Password.RequireLowercase = true;
+            option.Password.RequireUppercase = true;
+            option.Password.RequireDigit = true;
+            option.User.RequireUniqueEmail = true;
+        }).AddEntityFrameworkStores<MonqizDbContext>()
+            .AddDefaultTokenProviders();
+
+        // Password Security
+        builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+        builder.Services.AddScoped<IPasswordService, PasswordService>();
+
+        // JWT Token Service
+        builder.Services.AddScoped<ITokenService, TokenService>();
+
+        // JWT Authentication
+        var jwtSettings = builder.Configuration.GetSection("Jwt");
+        var secretKey = jwtSettings["Key"]
+            ?? throw new InvalidOperationException("JWT Key is missing.");
+
+        builder.Services
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+
+                    ValidateAudience = true,
+                    ValidAudience = jwtSettings["Audience"],
+
+                    ValidateLifetime = true,
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(secretKey)),
+                    
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
         builder.Services.AddMemoryCache();
 
         builder.Services.AddAuthorization();

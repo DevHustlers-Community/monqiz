@@ -6,6 +6,7 @@ import '../../presentation/screens/auth/register_screen.dart';
 import '../../presentation/screens/create_request/create_request_wizard_screen.dart';
 import '../../presentation/screens/donor_card/donor_card_screen.dart';
 import '../../presentation/screens/hospitals/hospitals_directory_screen.dart';
+import '../../presentation/screens/profile/profile_screen.dart';
 import '../../presentation/screens/request_details/request_details_screen.dart';
 import '../../presentation/screens/settings/settings_screen.dart';
 import '../../presentation/screens/shell/main_shell_screen.dart';
@@ -77,6 +78,11 @@ class AppRouter {
         path: '/donor-card',
         name: 'donor-card',
         builder: (context, state) => const DonorCardScreen(),
+      ),
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        builder: (context, state) => const ProfileScreen(),
       ),
       GoRoute(
         path: '/settings',
