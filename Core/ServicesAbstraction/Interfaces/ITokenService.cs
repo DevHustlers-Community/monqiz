@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Shared.Enums;
+
 namespace ServicesAbstraction.Interfaces
 {
     public interface ITokenService
@@ -11,7 +9,5 @@ namespace ServicesAbstraction.Interfaces
       string email,
       IList<string> roles,
       BloodType bloodType);
-
-        
     }
 }

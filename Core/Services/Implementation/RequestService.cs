@@ -1,7 +1,6 @@
 ﻿using Shared.Dtos.Request;
 using Shared.Enums;
-using Services.Specification;
-using Domain.Models;
+
 namespace Services.Implementation
 {
     public class RequestService(IUnitOfWork _unitOfWork, INotificationService _notification) : IRequestService
@@ -215,8 +214,6 @@ namespace Services.Implementation
                 $"The request status has been changed to {status.ToString()}.");
         }
 
-
-
         public async Task<ApiResponse<IEnumerable<RequestAcceptanceDto>>>
             GetRequestAcceptancesAsync(Guid requestId, Guid userId, bool isAdmin)
         {
@@ -227,7 +224,6 @@ namespace Services.Implementation
             if (request is null)
                 throw new NotFoundException("Request not found.");
 
-           
             if (request.CreatorUserId != userId && !isAdmin)
                 return ApiResponse<IEnumerable<RequestAcceptanceDto>>
                     .Failure("You are not allowed to view these acceptances.");
@@ -238,7 +234,6 @@ namespace Services.Implementation
                 .GetGenericRepo<RequestAcceptance>()
                 .GetAllAsync(specification);
 
-           
             var result = acceptances.Select(e => new RequestAcceptanceDto
             {
                 DonorFullName = e.User.FullName,
@@ -252,10 +247,9 @@ namespace Services.Implementation
                 .Success(result, "Request acceptances retrieved successfully.");
         }
 
-
-        public async Task<ApiResponse<int>> 
-            UpdateAcceptanceStatusAsync(Guid requestId,Guid donorId,Guid currentUserId,
-            bool isAdmin,DonationStatus status)
+        public async Task<ApiResponse<int>>
+            UpdateAcceptanceStatusAsync(Guid requestId, Guid donorId, Guid currentUserId,
+            bool isAdmin, DonationStatus status)
         {
             // 1 Completed / Cancelled status
             if (status != DonationStatus.Completed &&
@@ -269,7 +263,7 @@ namespace Services.Implementation
             var specification = new RequestAcceptanceByIdSpecification(
                 requestId,
                 donorId);
-            
+
             var acceptance = await _unitOfWork
                 .GetGenericRepo<RequestAcceptance>()
                 .GetByIdAsync(specification);

@@ -1,4 +1,3 @@
-
 using FluentValidation;
 using Shared.Dtos.Auth;
 using System.ComponentModel.DataAnnotations;

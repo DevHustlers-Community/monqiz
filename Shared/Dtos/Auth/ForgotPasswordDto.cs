@@ -1,4 +1,3 @@
-
 namespace Shared.Dtos.Auth;
 
 public class ForgotPasswordDto

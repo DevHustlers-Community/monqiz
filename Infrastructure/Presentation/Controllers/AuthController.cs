@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Persistence.Data;
 using Shared.Dtos.Auth;
-using Shared.Enums;
-using Microsoft.AspNetCore.Authorization;
+
 namespace Presentation.Controllers;
+
 using Microsoft.AspNetCore.Identity;
 
 public class AuthController : ApiBaseController
@@ -23,7 +23,6 @@ public class AuthController : ApiBaseController
     private readonly IValidator<ForgotPasswordDto> _forgotPasswordValidator;
     private readonly IValidator<ResetPasswordDto> _resetPasswordValidator;
     private readonly UserManager<User> _userManager;
-
 
     public AuthController(
         MonqizDbContext context,
@@ -187,7 +186,7 @@ public class AuthController : ApiBaseController
 
         var user = await _context.Users
             .FirstOrDefaultAsync(u =>
-                u.NormalizedEmail == normalizedEmail||
+                u.NormalizedEmail == normalizedEmail ||
                 u.PhoneNumber == identifier);
 
         if (user is null)
@@ -233,7 +232,6 @@ public class AuthController : ApiBaseController
             }
         });
     }
-
 
     // POST: api/auth/forgot-password
     [AllowAnonymous]
@@ -294,7 +292,6 @@ public class AuthController : ApiBaseController
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
     {
-        
         var validationResult =
             await _resetPasswordValidator.ValidateAsync(dto);
 
@@ -360,5 +357,4 @@ public class AuthController : ApiBaseController
             message = "Password has been reset successfully."
         });
     }
-
 }
