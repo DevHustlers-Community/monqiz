@@ -50,7 +50,7 @@ namespace Persistence.Data
         {
             var path = Path.Combine(SeedFolder, fileName);
             if (!File.Exists(path))
-                return new List<TEntity>();
+                throw new FileNotFoundException($"Seed file not found: {path}", path);
 
             await using var stream = File.OpenRead(path);
             return await JsonSerializer.DeserializeAsync<List<TEntity>>(stream, JsonOptions) ?? [];
