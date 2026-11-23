@@ -1,5 +1,4 @@
 using Domain.Interfaces.Specification;
-using Domain.Models;
 
 namespace Services.Specification
 {

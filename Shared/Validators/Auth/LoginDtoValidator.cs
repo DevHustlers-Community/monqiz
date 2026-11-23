@@ -1,6 +1,7 @@
 using FluentValidation;
 using Shared.Dtos.Auth;
 using System.Text.RegularExpressions;
+
 namespace Shared.Validators.Auth;
 
 public class LoginDtoValidator : AbstractValidator<LoginDto>

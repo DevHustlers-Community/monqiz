@@ -59,13 +59,13 @@ the services layer, and the infrastructure projects provide the database and HTT
 ┌─────────────────────────────────────────────────────────────┐
 │  src/Monqiz.Api                      host & composition root│
 ├─────────────────────────────────────────────────────────────┤
-│  Infrastructure/Presentation         HTTP controllers        │
-│  Core/Services                       business logic          │
-│  Infrastructure/Persistence          EF Core, SQL Server     │
+│  Infrastructure/Presentation         HTTP controllers       │
+│  Core/Services                       business logic         │
+│  Infrastructure/Persistence          EF Core, SQL Server    │
 ├─────────────────────────────────────────────────────────────┤
-│  Core/ServicesAbstraction            service contracts       │
-│  Core/Domain                         entities & enums        │
-│  Shared                              shared types & DTOs     │
+│  Core/ServicesAbstraction            service contracts      │
+│  Core/Domain                         entities & enums       │
+│  Shared                              shared types & DTOs    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -88,7 +88,6 @@ around.
 monqiz/
 ├── Core/
 │   ├── Domain/
-│   │   ├── Enums/                    # BloodType, Gender, statuses
 │   │   └── Models/                   # User, Hospital, Request, ...
 │   ├── ServicesAbstraction/          # service interfaces
 │   └── Services/                     # service implementations
@@ -100,6 +99,7 @@ monqiz/
 │   │       └── MonqizDbContext.cs
 │   └── Presentation/                 # API controllers
 ├── Shared/                           # shared types and DTOs
+|   └── Enums/                        # BloodType, Gender, statuses
 ├── src/
 │   └── Monqiz.Api/                   # ASP.NET Core host
 │       ├── Program.cs
@@ -192,12 +192,99 @@ erDiagram
 | `DonationStatus` | `Pending`, `Accepted`, `Completed`, `Cancelled`                                               |
 
 
+## Getting started
+
+### Run the backend locally
+
+**Prerequisites:** the [.NET 10 SDK](https://dotnet.microsoft.com/download) and a local SQL Server
+instance (Express and LocalDB both work).
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/DevHustlers-Community/monqiz.git
+   cd monqiz
+   ```
+
+2. **Copy the env example** and fill in your own values:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   | Variable                               | What to put                                                            |
+   | -------------------------------------- | ---------------------------------------------------------------------- |
+   | `Jwt__Key`                             | A random secret of at least 32 characters                              |
+   | `Otp__Secret`                          | A random **base64** string                                             |
+   | `ConnectionStrings__DefaultConnection` | Only if your SQL Server differs from the default in `appsettings.json` |
+
+   Generate a secret with `openssl rand -base64 32`, or in PowerShell:
+
+   ```powershell
+   $b = New-Object byte[] 32; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); [Convert]::ToBase64String($b)
+   ```
+
+   `.env` is git-ignored and nothing sensitive lives in `appsettings*.json`. Keep it that way.
+
+3. **Load the variables** into the terminal you will run the API from. ASP.NET Core reads environment
+   variables on its own, but it does not read `.env` files, so load it once per terminal:
+
+   ```bash
+   # bash, zsh, Git Bash
+   set -a; source .env; set +a
+   ```
+
+   ```powershell
+   # PowerShell
+   Get-Content .env | Where-Object { $_ -match '^\s*[^#\s]' } | ForEach-Object {
+     $name, $value = $_ -split '=', 2
+     [Environment]::SetEnvironmentVariable($name.Trim(), $value.Trim().Trim('"'), 'Process')
+   }
+   ```
+
+   Already keep these as user or system environment variables? Skip this step.
+
+4. **Run the API**
+
+   ```bash
+   dotnet run --project src/Monqiz.Api --launch-profile http
+   ```
+
+   The API listens on `http://localhost:5139` and the Scalar API docs are at
+   `http://localhost:5139/scalar/v1`. On startup the app applies pending migrations and seeds the
+   database, so there is no need to run `dotnet ef database update` first.
+
+### Seeded data
+
+On startup the app loads the JSON files in `Infrastructure/Persistence/Data/DataSeedFiles/`:
+
+| Data                | Count | Notes                                                                    |
+| ------------------- | ----- | ------------------------------------------------------------------------ |
+| Users               | 11    | Role `User`, except the **last** entry in `Users.json`, which is `Admin` |
+| Addresses           | 10    | Cairo, Giza, Alexandria, Sohag, Assiut, Dakahlia                         |
+| Hospitals           | 6     |                                                                          |
+| Blood requests      | 8     | `Pending`, `Fulfilled` and `Cancelled`                                   |
+| Request acceptances | 10    |                                                                          |
+
+All seeded accounts share the password `P@ssw0rd`. Log in with `POST /api/auth/login` using an email
+or an Egyptian phone number, for example `ahmed.hassan@example.com` or `01100000001`.
+
+Seeding runs on every startup but skips any table that already has rows,
+so restarting the app never duplicates data. To start from scratch:
+
+```bash
+dotnet ef database drop -p Infrastructure/Persistence -s src/Monqiz.Api
+```
+
+> **Development only.** The seeded accounts and their shared password are for local testing.
+> They will be replaced before the repository goes public.
+
 ## EF Core workflow
 
 Run these commands from the repository root:
 
-| Task                        | Command                                                                                                   |
-| --------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Task                        | Command                                                                                                    |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | Add a migration             | `dotnet ef migrations add <Name> -p Infrastructure/Persistence -s src/Monqiz.Api`                          |
 | Apply migrations            | `dotnet ef database update -p Infrastructure/Persistence -s src/Monqiz.Api`                                |
 | Remove the last migration   | `dotnet ef migrations remove -p Infrastructure/Persistence -s src/Monqiz.Api`                              |
@@ -209,11 +296,16 @@ project.
 
 ## Configuration
 
-| Setting                                | Location                                | Notes                                        |
-| -------------------------------------- | --------------------------------------- | -------------------------------------------- |
-| `ConnectionStrings:DefaultConnection`  | `appsettings.json` / environment        | SQL Server connection string                 |
-| `Logging:LogLevel`                     | `appsettings.json`                      | Default and per-category log levels          |
-| `AllowedHosts`                         | `appsettings.json`                      | Host filtering                               |
+| Setting                                               | Location                                                     | Notes                                                  |
+| ----------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
+| `Jwt:Key`                                             | Environment variable `Jwt__Key`                              | **Required, secret.** Token signing key                |
+| `Otp:Secret`                                          | Environment variable `Otp__Secret`                           | **Required, secret.** Base64 secret for one-time codes |
+| `ConnectionStrings:DefaultConnection`                 | `appsettings.json` or `ConnectionStrings__DefaultConnection` | SQL Server connection string                           |
+| `Jwt:Issuer`, `Jwt:Audience`, `Jwt:DurationInMinutes` | `appsettings.json`                                           | Token claims and lifetime, not secret                  |
+| `Logging:LogLevel`                                    | `appsettings.json`                                           | Log levels                                             |
+| `AllowedHosts`                                        | `appsettings.json`                                           | Host filtering                                         |
+
+`.env.example` lists every variable with placeholder values. Secrets never go in `appsettings*.json`.
 
 OpenAPI and Scalar are mapped only when `ASPNETCORE_ENVIRONMENT=Development`.
 
@@ -223,11 +315,11 @@ OpenAPI and Scalar are mapped only when `ASPNETCORE_ENVIRONMENT=Development`.
 - [x] Domain model and EF Core configurations
 - [x] Initial migration
 - [x] OpenAPI and Scalar documentation
-- [ ] Identity registration and authentication (JWT or cookie-based)
-- [ ] Donor and hospital registration flows
-- [ ] Donation request endpoints
-- [ ] Donor matching by blood type and governorate
-- [ ] Acceptance and donation lifecycle
+- [x] Identity registration and authentication (JWT or cookie-based)
+- [x] Donor and hospital registration flows
+- [x] Donation request endpoints
+- [x] Donor matching by blood type and governorate
+- [x] Acceptance and donation lifecycle
 - [ ] Validation, error handling, and ProblemDetails
 - [ ] Integration tests
 - [ ] Decouple `Domain` from the EF-specific Identity package

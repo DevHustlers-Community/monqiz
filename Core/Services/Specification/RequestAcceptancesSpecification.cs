@@ -1,4 +1,3 @@
-
 using Domain.Interfaces.Specification;
 
 namespace Services.Specification
@@ -13,7 +12,6 @@ namespace Services.Specification
         {
             //يحمل داتا المتبرع مع كل Acceptance
             AddIncluding(e => e.User);
-
         }
     }
 }

@@ -24,10 +24,8 @@ namespace ServicesAbstraction.Interfaces
 
         Task<ApiResponse<int>> UpdateStatus(Guid requestId, Guid userId, RequestStatus status);
 
-        Task<ApiResponse<IEnumerable<RequestAcceptanceDto>>>GetRequestAcceptancesAsync(Guid requestId, Guid userId, bool isAdmin);
+        Task<ApiResponse<IEnumerable<RequestAcceptanceDto>>> GetRequestAcceptancesAsync(Guid requestId, Guid userId, bool isAdmin);
 
-        Task<ApiResponse<int>> UpdateAcceptanceStatusAsync(Guid requestId,Guid donorId,Guid currentUserId,bool isAdmin,DonationStatus status);
-
-
+        Task<ApiResponse<int>> UpdateAcceptanceStatusAsync(Guid requestId, Guid donorId, Guid currentUserId, bool isAdmin, DonationStatus status);
     }
 }

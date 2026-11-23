@@ -38,13 +38,11 @@ public class RegisterDtoValidator : AbstractValidator<RegisterDto>
             .Matches(@"[^a-zA-Z0-9]")
             .WithMessage("Password must contain at least one special character.");
 
-
         RuleFor(x => x.BirthDate)
            .NotEqual(default(DateOnly))
            .WithMessage("Birth date is required.")
            .LessThan(DateOnly.FromDateTime(DateTime.Today))
            .WithMessage("Birth date must be in the past.");
-
 
         RuleFor(x => x.Gender)
             .IsInEnum();

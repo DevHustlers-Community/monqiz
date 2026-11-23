@@ -8,7 +8,7 @@ namespace Persistence.Data
         UserManager<User> userManager) : IDataSeeding
     {
         private static readonly string SeedFolder =
-            Path.Combine(AppContext.BaseDirectory, "Persistence", "Data", "DataSeedFiles");
+            Path.Combine(AppContext.BaseDirectory, "Data", "DataSeedFiles");
 
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
@@ -50,7 +50,7 @@ namespace Persistence.Data
         {
             var path = Path.Combine(SeedFolder, fileName);
             if (!File.Exists(path))
-                throw new FileNotFoundException($"Seed {nameof(TEntity)} not found: {path}");
+                throw new FileNotFoundException($"Seed file not found: {path}", path);
 
             await using var stream = File.OpenRead(path);
             return await JsonSerializer.DeserializeAsync<List<TEntity>>(stream, JsonOptions) ?? [];
@@ -69,7 +69,11 @@ namespace Persistence.Data
             {
                 user.EmailConfirmed = true;
                 user.PhoneNumberConfirmed = true;
-                await userManager.CreateAsync(user, "P@ssw0rd");
+                // TODO: Replace with new passwords before the repo goes public.
+                var result = await userManager.CreateAsync(user, "P@ssw0rd");
+                if (!result.Succeeded)
+                    throw new InvalidOperationException(
+                        $"Seeding {user.Email} failed: {string.Join("; ", result.Errors.Select(e => e.Description))}");
                 await userManager.AddToRoleAsync(user, (items.LastOrDefault() != user ? "User" : "Admin"));
             }
         }

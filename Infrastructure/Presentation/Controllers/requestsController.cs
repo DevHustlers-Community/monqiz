@@ -37,7 +37,7 @@ namespace Presentation.Controllers
         [Authorize]
         public async Task<ActionResult<ApiResponse<PagenatedResult<RequestDetailsDto>>>> MyDonations(int? pageIndex)
             => Ok(await _requestService.GetMyDonationsAsync(GetCurrentUserId()!.Value, pageIndex));
-        
+
         [Authorize]
         [HttpGet("{id:guid}/acceptances")]
         public async Task<ActionResult<ApiResponse<IEnumerable<RequestAcceptanceDto>>>>
@@ -58,8 +58,8 @@ namespace Presentation.Controllers
 
         [Authorize]
         [HttpPatch("{requestId:guid}/acceptances/{acceptanceId:guid}/status")]
-        public async Task<ActionResult<ApiResponse<int>>> 
-            UpdateAcceptanceStatus(Guid requestId,Guid acceptanceId, 
+        public async Task<ActionResult<ApiResponse<int>>>
+            UpdateAcceptanceStatus(Guid requestId, Guid acceptanceId,
             UpdateAcceptanceStatusDto dto)
         {
             var userId = GetCurrentUserId();
