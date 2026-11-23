@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Persistence.Data.Migrations
+namespace Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class IntialMigration : Migration
+    public partial class Inicreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,23 +43,23 @@ namespace Persistence.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     PictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BirthDate = table.Column<DateOnly>(type: "date", nullable: false),
                     LastDonationDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Gender = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     BloodType = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
@@ -77,7 +78,7 @@ namespace Persistence.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     LocationUrl = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     AddressId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -233,7 +234,8 @@ namespace Persistence.Data.Migrations
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     RequiredDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Details = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     HospitalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatorUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -252,6 +254,41 @@ namespace Persistence.Data.Migrations
                         principalTable: "Hospitals",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(350)", maxLength: 350, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notifications_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Notifications_AspNetUsers_UserId1",
+                        column: x => x.UserId1,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Notifications_Requests_RequestId",
+                        column: x => x.RequestId,
+                        principalTable: "Requests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -316,7 +353,16 @@ namespace Persistence.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "AspNetUsers",
-                column: "NormalizedEmail");
+                column: "NormalizedEmail",
+                unique: true,
+                filter: "[NormalizedEmail] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_PhoneNumber",
+                table: "AspNetUsers",
+                column: "PhoneNumber",
+                unique: true,
+                filter: "[PhoneNumber] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
@@ -334,6 +380,28 @@ namespace Persistence.Data.Migrations
                 name: "IX_Hospitals_AddressId",
                 table: "Hospitals",
                 column: "AddressId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_RequestId",
+                table: "Notifications",
+                column: "RequestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UserId",
+                table: "Notifications",
+                column: "UserId",
+                filter: "[IsRead] = 0");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UserId_CreateAt",
+                table: "Notifications",
+                columns: new[] { "UserId", "CreateAt" },
+                descending: new[] { false, true });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UserId1",
+                table: "Notifications",
+                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RequestAcceptance_RequestId",
@@ -371,6 +439,9 @@ namespace Persistence.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "DonationAddress");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "RequestAcceptance");

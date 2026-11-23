@@ -3,20 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence.Data;
 
 #nullable disable
 
-namespace Persistence.Data.Migrations
+namespace Persistence.Migrations
 {
     [DbContext(typeof(MonqizDbContext))]
-    [Migration("20261106201806_IntialMigration")]
-    partial class IntialMigration
+    partial class MonqizDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,8 +72,8 @@ namespace Persistence.Data.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -103,6 +100,54 @@ namespace Persistence.Data.Migrations
                     b.ToTable("Hospitals");
                 });
 
+            modelBuilder.Entity("Domain.Models.Notifications", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(350)
+                        .HasColumnType("nvarchar(350)");
+
+                    b.Property<Guid>("RequestId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId");
+
+                    b.HasIndex("UserId")
+                        .HasFilter("[IsRead] = 0");
+
+                    b.HasIndex("UserId1");
+
+                    b.HasIndex("UserId", "CreateAt")
+                        .IsDescending(false, true);
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("Domain.Models.Request", b =>
                 {
                     b.Property<Guid>("Id")
@@ -123,13 +168,20 @@ namespace Persistence.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Details")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<Guid>("HospitalId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("RequiredDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -195,16 +247,16 @@ namespace Persistence.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Gender")
                         .IsRequired()
@@ -215,8 +267,9 @@ namespace Persistence.Data.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("LastName")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -233,10 +286,11 @@ namespace Persistence.Data.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
@@ -249,7 +303,8 @@ namespace Persistence.Data.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -261,12 +316,18 @@ namespace Persistence.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
+                        .IsUnique()
+                        .HasDatabaseName("EmailIndex")
+                        .HasFilter("[NormalizedEmail] IS NOT NULL");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique()
+                        .HasFilter("[PhoneNumber] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -432,6 +493,29 @@ namespace Persistence.Data.Migrations
                     b.Navigation("Address");
                 });
 
+            modelBuilder.Entity("Domain.Models.Notifications", b =>
+                {
+                    b.HasOne("Domain.Models.Request", "Request")
+                        .WithMany()
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.User", null)
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId1");
+
+                    b.Navigation("Request");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Models.Request", b =>
                 {
                     b.HasOne("Domain.Models.User", "User")
@@ -541,6 +625,8 @@ namespace Persistence.Data.Migrations
             modelBuilder.Entity("Domain.Models.User", b =>
                 {
                     b.Navigation("Addresses");
+
+                    b.Navigation("Notifications");
 
                     b.Navigation("RequestAcceptances");
 
