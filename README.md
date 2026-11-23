@@ -59,13 +59,13 @@ the services layer, and the infrastructure projects provide the database and HTT
 ┌─────────────────────────────────────────────────────────────┐
 │  src/Monqiz.Api                      host & composition root│
 ├─────────────────────────────────────────────────────────────┤
-│  Infrastructure/Presentation         HTTP controllers        │
-│  Core/Services                       business logic          │
-│  Infrastructure/Persistence          EF Core, SQL Server     │
+│  Infrastructure/Presentation         HTTP controllers       │
+│  Core/Services                       business logic         │
+│  Infrastructure/Persistence          EF Core, SQL Server    │
 ├─────────────────────────────────────────────────────────────┤
-│  Core/ServicesAbstraction            service contracts       │
-│  Core/Domain                         entities & enums        │
-│  Shared                              shared types & DTOs     │
+│  Core/ServicesAbstraction            service contracts      │
+│  Core/Domain                         entities & enums       │
+│  Shared                              shared types & DTOs    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
