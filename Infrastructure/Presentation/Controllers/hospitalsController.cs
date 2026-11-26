@@ -1,10 +1,12 @@
-﻿using Shared.Dtos.Hospital;
+﻿using FluentValidation;
+using Shared.Dtos.Hospital;
 
 namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class hospitalsController(IHospitalService _hospitalService) : ControllerBase
+    public class hospitalsController(IHospitalService _hospitalService, IValidator<HospitalUpdateDto> _hospitalUpdateValidator,
+        IValidator<HospitalCreateDto> _hospitalCreateValidator) : ControllerBase
     {
         [Authorize]
         [HttpGet("{id:guid}")]
@@ -16,19 +18,36 @@ namespace Presentation.Controllers
         public async Task<ActionResult<PagenatedResult<HospitalDto>>> GetAll(string? governorate, string? city, int? pageIndex)
             => Ok(await _hospitalService.GetAllAsync(governorate, city, pageIndex));
 
-        [Authorize]
+        private Authorize(Roles = "Admin")]
+
         [HttpPost]
         public async Task<ActionResult<ApiResponse<HospitalDto>>> Create(HospitalCreateDto hospital)
-             => Ok(await _hospitalService.CreateAsync(hospital));
+        {
+            var validationResult = await _hospitalCreateValidator.ValidateAsync(hospital);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors.Select(e => new
+                {
+                    e.PropertyName,
+                    e.ErrorMessage
+                }));
+            return Ok(await _hospitalService.CreateAsync(hospital));
+        }
 
-        //[Authorize(Roles = "Admin")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<ApiResponse<int>>> Update(Guid id, HospitalUpdateDto hospital)
-            => Ok(await _hospitalService.UpdateAsync(id, hospital));
+        {
+            var validationResult = await _hospitalUpdateValidator.ValidateAsync(hospital);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors.Select(e => new
+                {
+                    e.PropertyName,
+                    e.ErrorMessage
+                }));
+            return Ok(await _hospitalService.UpdateAsync(id, hospital));
+        }
 
-        //[Authorize(Roles = "Admin")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult<ApiResponse<int>>> Delete(Guid id)
         => Ok(await _hospitalService.DelteAsync(id));

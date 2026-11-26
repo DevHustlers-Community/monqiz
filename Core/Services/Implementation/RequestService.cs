@@ -27,10 +27,10 @@ namespace Services.Implementation
             originRequest.Hospital = hospital;
             originRequest.Status = RequestStatus.Approved;
 
-            await _notification.CreateNotificationToBloodDonationRequest(originRequest.Id);
-
             await _unitOfWork.GetGenericRepo<Request>().AddAsync(originRequest);
             await _unitOfWork.SaveChanagesAsync();
+
+            await _notification.CreateNotificationToBloodDonationRequest(originRequest.Id);
 
             RequestDetailsDto result = FactoryRequest.ToRequestDto(originRequest);
 
