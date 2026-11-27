@@ -1,7 +1,7 @@
 ﻿using Shared.Dtos.Address;
 
 namespace Services.Implementation
-{
+{ 
     public class AddressService(IUnitOfWork _unitOfWork, IAddressRepo _addressRepo) : IAddressService
     {
         public async Task<ApiResponse<PagenatedResult<AddressDto>>> GetAllAddressesAsync(string? governorate, string? city, int? pageIndex)
@@ -39,5 +39,6 @@ namespace Services.Implementation
             return ApiResponse<PagenatedResult<string>>.Success(pagenation,
                 "Governorates have been successfully retrived.");
         }
+        
     }
 }

@@ -20,5 +20,6 @@ namespace Persistence.Data
         public DbSet<Hospital> Hospitals { get; set; }
         public DbSet<Request> Requests { get; set; }
         public DbSet<Notifications> Notifications { get; set; }
+        public DbSet<HospitalAdditionRequest> HospitalAdditionRequests { get; set; }
     }
 }

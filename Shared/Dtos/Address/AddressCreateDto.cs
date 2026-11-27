@@ -9,4 +9,5 @@ namespace Shared.Dtos.Address
         [Required, MaxLength(50)]
         public string Governorate { get; init; } = string.Empty;
     }
+
 }

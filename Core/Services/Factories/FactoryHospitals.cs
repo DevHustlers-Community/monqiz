@@ -29,7 +29,7 @@ namespace Services.Factories
         }
 
         public static HospitalDto ToHospitalDto(this Hospital hospital)
-        {
+                         {
             return new HospitalDto()
             {
                 Address = FactoryAddresses.ToAddressDto(hospital.Address),
